@@ -6,20 +6,28 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pushdb": "dotenv -e .env.local -- npx prisma db push",
+    "formdb": "npx prisma format",
+    "dropdb": "dotenv -e .env.local -- npx prisma db push --force-reset"
   },
   "dependencies": {
+    "@prisma/extension-accelerate": "^1.2.2",
+    "dotenv": "^16.4.7",
+    "next": "15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.1"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5"
   }
 }

@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Trait {
+  id               Int        @id @default(autoincrement())
+  name             String     @unique
+  desc             String?
+  type             TraitName
+  zodiacCaste      Zodiac[]   @relation(name: "Caste")
+  zodiacSway       Zodiac[]   @relation(name: "Sway")
+  zodiacAspect     Zodiac[]   @relation(name: "Aspect")
+  trees            Tree[]
+  templateTags     Template[] @relation(name: "Tag")
+  templateRequires Template[] @relation(name: "Requires")
+  templatePrevents Template[] @relation(name: "Prevents")
+  moves            Move[]
+  moveTags         Move[]     @relation(name: "Tag")
+  moveRequires     Move[]     @relation(name: "Requires")
+  movePrevents     Move[]     @relation(name: "Prevents")
+
+  @@map("traits")
+}
+
+model Zodiac {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  title    String
+  caste    Trait  @relation(name: "Caste", fields: [casteID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sway     Trait  @relation(name: "Sway", fields: [swayID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  aspect   Trait  @relation(name: "Aspect", fields: [aspectID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  casteID  Int
+  swayID   Int
+  aspectID Int
+
+  @@map("zodiacs")
+}
+
+model Tree {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  desc     String?
+  type     TraitName
+  source   Trait     @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sourceID Int
+
+  @@map("trees")
+}
+
+model Template {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  desc     String?
+  tag      Trait[] @relation(name: "Tag")
+  requires Trait[] @relation(name: "Requires")
+  prevents Trait[] @relation(name: "Prevents")
+
+  @@map("templates")
+}
+
+model Move {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  desc     String?
+  type     TraitName?
+  tree     TreeName?
+  source   Trait?     @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sourceID Int?
+  tag      Trait[]    @relation(name: "Tag")
+  requires Trait[]    @relation(name: "Requires")
+  prevents Trait[]    @relation(name: "Prevents")
+
+  @@map("moves")
+}
+
+model Pronoun {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  nom  String
+  obj  String
+  det  String
+  pos  String
+  ref  String
+
+  @@map("pronouns")
+}
+
+model Quirk {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  desc    String?
+  match   String
+  replace String
+
+  @@map("quirks")
+}
+
+enum TraitName {
+  CASTES
+  SWAYS
+  CLASSES
+  ASPECTS
+  TAGS
+
+  @@map("trait_name_enum")
+}
+
+enum TreeName {
+  TREES
+  TEMPLATES
+  GENERICS
+
+  @@map("tree_name_enum")
+}
