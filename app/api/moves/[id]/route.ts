@@ -3,17 +3,29 @@ import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
 import { Move, MoveSchema } from "@/app/lib/definitions";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const moves = await prisma.move.findMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const id = Number.parseInt(params.id);
+    const move = await prisma.move.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
+    return NextResponse.json({ move }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
+    const id = Number.parseInt(params.id);
     const response = await request.json();
     const requestData: Move = MoveSchema.parse(response);
     const responseData: Move | null = sanitize(requestData);
@@ -29,12 +41,15 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       } catch (error) {
-        const move = await prisma.move.create({
+        const move = await prisma.move.update({
           data: {
             name: responseData.name,
             desc: responseData.desc,
             tree: responseData.tree,
             sourceID: responseData.sourceID,
+          },
+          where: {
+            id,
           },
         });
         return NextResponse.json({ move }, { status: 200 });
@@ -50,10 +65,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const moves = await prisma.move.deleteMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const id = Number.parseInt(params.id);
+    const move = await prisma.move.delete({
+      where: {
+        id,
+      },
+    });
+    return NextResponse.json({ move }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }

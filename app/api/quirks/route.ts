@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
-import { Move, MoveSchema } from "@/app/lib/definitions";
+import { Quirk, QuirkSchema } from "@/app/lib/definitions";
 
 export async function GET(request: NextRequest) {
   try {
-    const moves = await prisma.move.findMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const quirks = await prisma.quirk.findMany();
+    return NextResponse.json({ quirks }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -15,33 +15,33 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const response = await request.json();
-    const requestData: Move = MoveSchema.parse(response);
-    const responseData: Move | null = sanitize(requestData);
+    const requestData: Quirk = QuirkSchema.parse(response);
+    const responseData: Quirk | null = sanitize(requestData);
     if (responseData != null) {
       try {
-        const duplicateData = await prisma.move.findFirstOrThrow({
+        const duplicateData = await prisma.quirk.findFirstOrThrow({
           where: {
             name: responseData.name,
           },
         });
         return NextResponse.json(
-          { message: "Move with this name already exists." },
+          { message: "Quirk with this name already exists." },
           { status: 400 }
         );
       } catch (error) {
-        const move = await prisma.move.create({
+        const quirk = await prisma.quirk.create({
           data: {
             name: responseData.name,
             desc: responseData.desc,
-            tree: responseData.tree,
-            sourceID: responseData.sourceID,
+            match: responseData.match,
+            replace: responseData.replace,
           },
         });
-        return NextResponse.json({ move }, { status: 200 });
+        return NextResponse.json({ quirk }, { status: 200 });
       }
     } else {
       return NextResponse.json(
-        { message: "Invalid Input: Move Data" },
+        { message: "Invalid Input: Quirk Data" },
         { status: 400 }
       );
     }
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const moves = await prisma.move.deleteMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const quirks = await prisma.quirk.deleteMany();
+    return NextResponse.json({ quirks }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }

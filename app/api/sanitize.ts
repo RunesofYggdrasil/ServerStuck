@@ -18,33 +18,41 @@ import {
 } from "@/app/lib/definitions";
 
 // https://github.com/colinhacks/zod
-export function sanitize(data: Trait): Trait | null;
 export function sanitize(data: Zodiac): Zodiac | null;
 export function sanitize(data: Tree): Tree | null;
 export function sanitize(data: Template): Template | null;
 export function sanitize(data: Move): Move | null;
 export function sanitize(data: Pronoun): Pronoun | null;
 export function sanitize(data: Quirk): Quirk | null;
-export function sanitize(data: unknown): unknown {
+export function sanitize(data: Trait): Trait | null;
+export function sanitize(
+  data: Zodiac | Tree | Template | Move | Pronoun | Quirk | Trait
+): Zodiac | Tree | Template | Move | Pronoun | Quirk | Trait | null {
   try {
-    if (isTrait(data)) {
+    if (isZodiac(data)) {
       console.log(1);
-    } else if (isZodiac(data)) {
-      console.log(2);
+      return data;
     } else if (isTree(data)) {
-      console.log(3);
+      console.log(2);
+      return data;
     } else if (isTemplate(data)) {
-      console.log(4);
+      console.log(3);
+      return data;
     } else if (isMove(data)) {
-      console.log(5);
+      console.log(4);
+      return data;
     } else if (isPronoun(data)) {
-      console.log(6);
+      console.log(5);
+      return data;
     } else if (isQuirk(data)) {
+      console.log(6);
+      return data;
+    } else if (isTrait(data)) {
       console.log(7);
+      return data;
     } else {
       return null;
     }
-    return data;
   } catch (error) {
     return null;
   }

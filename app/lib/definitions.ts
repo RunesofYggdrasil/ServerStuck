@@ -19,9 +19,9 @@ export interface Zodiac {
   caste: Trait;
   sway: Trait;
   aspect: Trait;
-  casteID?: number | undefined;
-  swayID?: number | undefined;
-  aspectID?: number | undefined;
+  casteID: number;
+  swayID: number;
+  aspectID: number;
 }
 
 export interface Tree {
@@ -30,7 +30,7 @@ export interface Tree {
   desc?: string | undefined;
   type: TraitName;
   source: Trait;
-  sourceID?: number | undefined;
+  sourceID: number;
 }
 
 export interface Template {
@@ -259,9 +259,9 @@ export const ZodiacSchema = z.object({
   caste: TraitSchema,
   sway: TraitSchema,
   aspect: TraitSchema,
-  casteID: z.number().optional(),
-  swayID: z.number().optional(),
-  aspectID: z.number().optional(),
+  casteID: z.number(),
+  swayID: z.number(),
+  aspectID: z.number(),
 });
 
 export const TreeSchema = z.object({
@@ -270,7 +270,7 @@ export const TreeSchema = z.object({
   desc: z.string().optional(),
   type: z.nativeEnum(TraitName),
   source: TraitSchema,
-  sourceID: z.number().optional(),
+  sourceID: z.number(),
 });
 
 export const TemplateSchema = z.object({
@@ -329,3 +329,24 @@ export const QuirkSchema = z.object({
   match: z.string(),
   replace: z.string(),
 });
+
+// ---
+// Section: Enums
+// ---
+
+export function toTraitName(value: string): TraitName {
+  switch (value) {
+    case "CASTES":
+      return TraitName.CASTES;
+    case "SWAYS":
+      return TraitName.SWAYS;
+    case "CLASSES":
+      return TraitName.CLASSES;
+    case "ASPECTS":
+      return TraitName.ASPECTS;
+    case "TAGS":
+      return TraitName.TAGS;
+    default:
+      return TraitName.TAGS;
+  }
+}

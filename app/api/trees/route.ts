@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
-import { Move, MoveSchema } from "@/app/lib/definitions";
+import { Tree, TreeSchema } from "@/app/lib/definitions";
 
 export async function GET(request: NextRequest) {
   try {
-    const moves = await prisma.move.findMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const trees = await prisma.tree.findMany();
+    return NextResponse.json({ trees }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -15,33 +15,33 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const response = await request.json();
-    const requestData: Move = MoveSchema.parse(response);
-    const responseData: Move | null = sanitize(requestData);
+    const requestData: Tree = TreeSchema.parse(response);
+    const responseData: Tree | null = sanitize(requestData);
     if (responseData != null) {
       try {
-        const duplicateData = await prisma.move.findFirstOrThrow({
+        const duplicateData = await prisma.tree.findFirstOrThrow({
           where: {
             name: responseData.name,
           },
         });
         return NextResponse.json(
-          { message: "Move with this name already exists." },
+          { message: "Tree with this name already exists." },
           { status: 400 }
         );
       } catch (error) {
-        const move = await prisma.move.create({
+        const tree = await prisma.tree.create({
           data: {
             name: responseData.name,
             desc: responseData.desc,
-            tree: responseData.tree,
+            type: responseData.type,
             sourceID: responseData.sourceID,
           },
         });
-        return NextResponse.json({ move }, { status: 200 });
+        return NextResponse.json({ tree }, { status: 200 });
       }
     } else {
       return NextResponse.json(
-        { message: "Invalid Input: Move Data" },
+        { message: "Invalid Input: Tree Data" },
         { status: 400 }
       );
     }
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const moves = await prisma.move.deleteMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const trees = await prisma.tree.deleteMany();
+    return NextResponse.json({ trees }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }

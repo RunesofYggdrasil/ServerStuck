@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
-import { Move, MoveSchema } from "@/app/lib/definitions";
+import { Zodiac, ZodiacSchema } from "@/app/lib/definitions";
 
 export async function GET(request: NextRequest) {
   try {
-    const moves = await prisma.move.findMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const zodiacs = await prisma.zodiac.findMany();
+    return NextResponse.json({ zodiacs }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -15,33 +15,34 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const response = await request.json();
-    const requestData: Move = MoveSchema.parse(response);
-    const responseData: Move | null = sanitize(requestData);
+    const requestData: Zodiac = ZodiacSchema.parse(response);
+    const responseData: Zodiac | null = sanitize(requestData);
     if (responseData != null) {
       try {
-        const duplicateData = await prisma.move.findFirstOrThrow({
+        const duplicateData = await prisma.zodiac.findFirstOrThrow({
           where: {
             name: responseData.name,
           },
         });
         return NextResponse.json(
-          { message: "Move with this name already exists." },
+          { message: "Zodiac with this name already exists." },
           { status: 400 }
         );
       } catch (error) {
-        const move = await prisma.move.create({
+        const zodiac = await prisma.zodiac.create({
           data: {
             name: responseData.name,
-            desc: responseData.desc,
-            tree: responseData.tree,
-            sourceID: responseData.sourceID,
+            title: responseData.title,
+            casteID: responseData.casteID,
+            swayID: responseData.swayID,
+            aspectID: responseData.aspectID,
           },
         });
-        return NextResponse.json({ move }, { status: 200 });
+        return NextResponse.json({ zodiac }, { status: 200 });
       }
     } else {
       return NextResponse.json(
-        { message: "Invalid Input: Move Data" },
+        { message: "Invalid Input: Zodiac Data" },
         { status: 400 }
       );
     }
@@ -52,8 +53,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const moves = await prisma.move.deleteMany();
-    return NextResponse.json({ moves }, { status: 200 });
+    const zodiacs = await prisma.zodiac.deleteMany();
+    return NextResponse.json({ zodiacs }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
