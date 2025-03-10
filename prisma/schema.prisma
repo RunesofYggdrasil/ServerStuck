@@ -8,21 +8,17 @@ datasource db {
 }
 
 model Trait {
-  id               Int        @id @default(autoincrement())
-  name             String     @unique
-  desc             String?
-  type             TraitName
-  zodiacCaste      Zodiac[]   @relation(name: "Caste")
-  zodiacSway       Zodiac[]   @relation(name: "Sway")
-  zodiacAspect     Zodiac[]   @relation(name: "Aspect")
-  trees            Tree[]
-  templateTags     Template[] @relation(name: "Tag")
-  templateRequires Template[] @relation(name: "Requires")
-  templatePrevents Template[] @relation(name: "Prevents")
-  moves            Move[]
-  moveTags         Move[]     @relation(name: "Tag")
-  moveRequires     Move[]     @relation(name: "Requires")
-  movePrevents     Move[]     @relation(name: "Prevents")
+  id             Int                 @id @default(autoincrement())
+  name           String              @unique
+  desc           String?
+  type           TraitName
+  zodiacCaste    Zodiac[]            @relation(name: "Caste")
+  zodiacSway     Zodiac[]            @relation(name: "Sway")
+  zodiacAspect   Zodiac[]            @relation(name: "Aspect")
+  trees          Tree[]
+  templateTraits TemplatesOnTraits[]
+  moveSources    Move[]
+  moveTraits     MovesOnTraits[]
 
   @@map("traits")
 }
@@ -53,29 +49,46 @@ model Tree {
 }
 
 model Template {
-  id       Int     @id @default(autoincrement())
-  name     String  @unique
-  desc     String?
-  tag      Trait[] @relation(name: "Tag")
-  requires Trait[] @relation(name: "Requires")
-  prevents Trait[] @relation(name: "Prevents")
+  id     Int                 @id @default(autoincrement())
+  name   String              @unique
+  desc   String?
+  traits TemplatesOnTraits[]
 
   @@map("templates")
 }
 
+model TemplatesOnTraits {
+  id         Int       @id @default(autoincrement())
+  type       TraitType
+  template   Template  @relation(fields: [templateID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  templateID Int
+  trait      Trait     @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  traitID    Int
+
+  @@map("templates_on_traits")
+}
+
 model Move {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique
+  id       Int             @id @default(autoincrement())
+  name     String          @unique
   desc     String?
-  type     TraitName?
-  tree     TreeName?
-  source   Trait?     @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  tree     TreeName
+  source   Trait?          @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   sourceID Int?
-  tag      Trait[]    @relation(name: "Tag")
-  requires Trait[]    @relation(name: "Requires")
-  prevents Trait[]    @relation(name: "Prevents")
+  traits   MovesOnTraits[]
 
   @@map("moves")
+}
+
+model MovesOnTraits {
+  id      Int       @id @default(autoincrement())
+  type    TraitType
+  move    Move      @relation(fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  moveID  Int
+  trait   Trait     @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  traitID Int
+
+  @@map("moves_on_traits")
 }
 
 model Pronoun {
@@ -108,6 +121,14 @@ enum TraitName {
   TAGS
 
   @@map("trait_name_enum")
+}
+
+enum TraitType {
+  TAGS
+  REQUIRES
+  PREVENTS
+
+  @@map("trait_type_enum")
 }
 
 enum TreeName {

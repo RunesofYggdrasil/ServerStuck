@@ -1,3 +1,4 @@
+import { TraitName, TraitType, TreeName } from "@prisma/client";
 import { z } from "zod";
 
 // ---
@@ -36,27 +37,37 @@ export interface Template {
   id?: number | undefined;
   name: string;
   desc?: string | undefined;
-  tag: Trait[];
-  requires: Trait[];
-  prevents: Trait[];
-  tagIDs?: number[] | undefined;
-  requiresIDs?: number[] | undefined;
-  preventsIDs?: number[] | undefined;
+  traits?: TemplatesOnTraits[] | undefined;
+  traitIDs?: number[] | undefined;
+}
+
+export interface TemplatesOnTraits {
+  id?: number | undefined;
+  type: TraitType;
+  template: Template;
+  templateID: number;
+  trait: Trait;
+  traitID: number;
 }
 
 export interface Move {
   id?: number | undefined;
   name: string;
   desc?: string | undefined;
-  type: TraitName | TreeName;
+  tree: TreeName;
   source?: Trait | undefined;
   sourceID?: number | undefined;
-  tag: Trait[];
-  requires: Trait[];
-  prevents: Trait[];
-  tagIDs?: number[] | undefined;
-  requiresIDs?: number[] | undefined;
-  preventsIDs?: number[] | undefined;
+  traits?: MovesOnTraits[] | undefined;
+  traitIDs?: number[] | undefined;
+}
+
+export interface MovesOnTraits {
+  id?: number | undefined;
+  type: TraitType;
+  move: Move;
+  moveID: number;
+  trait: Trait;
+  traitID: number;
 }
 
 export interface Pronoun {
@@ -81,20 +92,6 @@ export interface Quirk {
   replace: string;
 }
 
-export enum TraitName {
-  CASTE = "CASTES",
-  SWAY = "LUNAR SWAYS",
-  CLASS = "CLASSES",
-  ASPECT = "ASPECTS",
-  TAG = "TAGS",
-}
-
-export enum TreeName {
-  TREE = "TREES",
-  TEMPLATE = "TEMPLATES",
-  GENERIC = "GENERICS",
-}
-
 // ---
 // Section: User-Defined Type Guards
 // ---
@@ -104,7 +101,18 @@ export function isTrait(data: any): data is Trait {
     typeof data === "object" &&
     data !== null &&
     "name" in data &&
-    "type" in data
+    "type" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data
+    )
   );
 }
 
@@ -112,11 +120,19 @@ export function isZodiac(data: any): data is Zodiac {
   return (
     typeof data === "object" &&
     data !== null &&
-    "name" in data &&
-    "title" in data &&
+    "aspect" in data &&
     "caste" in data &&
+    "name" in data &&
     "sway" in data &&
-    "aspect" in data
+    "title" in data &&
+    !(
+      "cases" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "tree" in data ||
+      "type" in data
+    )
   );
 }
 
@@ -125,8 +141,18 @@ export function isTree(data: any): data is Tree {
     typeof data === "object" &&
     data !== null &&
     "name" in data &&
+    "source" in data &&
     "type" in data &&
-    "source" in data
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data
+    )
   );
 }
 
@@ -135,9 +161,18 @@ export function isTemplate(data: any): data is Template {
     typeof data === "object" &&
     data !== null &&
     "name" in data &&
-    "tag" in data &&
-    "requires" in data &&
-    "prevents" in data
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
+    )
   );
 }
 
@@ -146,10 +181,16 @@ export function isMove(data: any): data is Move {
     typeof data === "object" &&
     data !== null &&
     "name" in data &&
-    "type" in data &&
-    "tag" in data &&
-    "requires" in data &&
-    "prevents" in data
+    "tree" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "sway" in data ||
+      "title" in data
+    )
   );
 }
 
@@ -157,8 +198,19 @@ export function isPronoun(data: any): data is Pronoun {
   return (
     typeof data === "object" &&
     data !== null &&
+    "cases" in data &&
     "name" in data &&
-    "cases" in data
+    !(
+      "aspect" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
+    )
   );
 }
 
@@ -166,9 +218,19 @@ export function isQuirk(data: any): data is Quirk {
   return (
     typeof data === "object" &&
     data !== null &&
-    "name" in data &&
     "match" in data &&
-    "replace" in data
+    "name" in data &&
+    "replace" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
+    )
   );
 }
 
@@ -215,27 +277,35 @@ export const TemplateSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
   desc: z.string().optional(),
-  tag: TraitSchema,
-  requires: TraitSchema,
-  prevents: TraitSchema,
-  tagIDs: z.number().optional(),
-  requiresIDs: z.number().optional(),
-  preventsIDs: z.number().optional(),
+  traitIDs: z.number().array().optional(),
+});
+
+export const TemplatesOnTraitsSchema = z.object({
+  id: z.number().optional(),
+  type: z.nativeEnum(TraitType),
+  template: TemplateSchema,
+  templateID: z.number(),
+  trait: TraitSchema,
+  traitID: z.number(),
 });
 
 export const MoveSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
   desc: z.string().optional(),
-  type: z.nativeEnum(TraitName).or(z.nativeEnum(TreeName)),
-  source: TraitSchema,
+  tree: z.nativeEnum(TreeName),
+  source: TraitSchema.optional(),
   sourceID: z.number().optional(),
-  tag: TraitSchema,
-  requires: TraitSchema,
-  prevents: TraitSchema,
-  tagIDs: z.number().optional(),
-  requiresIDs: z.number().optional(),
-  preventsIDs: z.number().optional(),
+  traitIDs: z.number().array().optional(),
+});
+
+export const MovesOnTraitsSchema = z.object({
+  id: z.number().optional(),
+  type: z.nativeEnum(TraitType),
+  move: MoveSchema,
+  moveID: z.number(),
+  trait: TraitSchema,
+  traitID: z.number(),
 });
 
 export const PronounSchema = z.object({

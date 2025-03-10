@@ -6,8 +6,6 @@ import {
   Move,
   Pronoun,
   Quirk,
-  TraitName,
-  TreeName,
 } from "@/app/lib/definitions";
 import {
   isTrait,
