@@ -5,10 +5,10 @@ import { Zodiac, ZodiacSchema } from "@/app/lib/definitions";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const zodiac = await prisma.zodiac.findFirstOrThrow({
       where: {
         id,
@@ -22,10 +22,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const response = await request.json();
     const requestData: Zodiac = ZodiacSchema.parse(response);
     const responseData: Zodiac | null = sanitize(requestData);
@@ -68,10 +68,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const zodiac = await prisma.zodiac.delete({
       where: {
         id,

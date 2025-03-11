@@ -5,10 +5,10 @@ import { Trait, TraitSchema, toTraitName } from "@/app/lib/definitions";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string[] } }
+  { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const type = toTraitName(params.slug[0].toUpperCase());
+    const type = toTraitName((await params).slug[0].toUpperCase());
     const trait = await prisma.trait.findMany({
       where: {
         type,
@@ -22,10 +22,10 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string[] } }
+  { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const type = toTraitName(params.slug[0].toUpperCase());
+    const type = toTraitName((await params).slug[0].toUpperCase());
     const trait = await prisma.trait.deleteMany({
       where: {
         type,

@@ -5,10 +5,10 @@ import { Template, TemplateSchema } from "@/app/lib/definitions";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const template = await prisma.template.findFirstOrThrow({
       where: {
         id,
@@ -22,10 +22,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const response = await request.json();
     const requestData: Template = TemplateSchema.parse(response);
     const responseData: Template | null = sanitize(requestData);
@@ -65,10 +65,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const template = await prisma.template.delete({
       where: {
         id,

@@ -5,10 +5,10 @@ import { Tree, TreeSchema } from "@/app/lib/definitions";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const tree = await prisma.tree.findFirstOrThrow({
       where: {
         id,
@@ -22,10 +22,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const response = await request.json();
     const requestData: Tree = TreeSchema.parse(response);
     const responseData: Tree | null = sanitize(requestData);
@@ -67,10 +67,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number.parseInt(params.id);
+    const id = Number.parseInt((await params).id);
     const tree = await prisma.tree.delete({
       where: {
         id,
