@@ -176,6 +176,29 @@ export function isTemplate(data: any): data is Template {
   );
 }
 
+export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "template" in data &&
+    "trait" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "move" in data ||
+      "name" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
+    )
+  );
+}
+
 export function isMove(data: any): data is Move {
   return (
     typeof data === "object" &&
@@ -190,6 +213,29 @@ export function isMove(data: any): data is Move {
       "replace" in data ||
       "sway" in data ||
       "title" in data
+    )
+  );
+}
+
+export function isMovesOnTraits(data: any): data is MovesOnTraits {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "move" in data &&
+    "trait" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "name" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "template" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
     )
   );
 }
