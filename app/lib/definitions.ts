@@ -54,9 +54,8 @@ export interface Move {
   id?: number | undefined;
   name: string;
   desc?: string | undefined;
-  tree: TreeName;
-  source?: Trait | undefined;
-  sourceID?: number | undefined;
+  origin: TreeName;
+  originID?: number | undefined;
   traits?: MovesOnTraits[] | undefined;
   traitIDs?: number[] | undefined;
 }
@@ -107,11 +106,11 @@ export function isTrait(data: any): data is Trait {
       "cases" in data ||
       "caste" in data ||
       "match" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
-      "title" in data ||
-      "tree" in data
+      "title" in data
     )
   );
 }
@@ -128,9 +127,9 @@ export function isZodiac(data: any): data is Zodiac {
     !(
       "cases" in data ||
       "match" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -148,10 +147,10 @@ export function isTree(data: any): data is Tree {
       "cases" in data ||
       "caste" in data ||
       "match" in data ||
+      "origin" in data ||
       "replace" in data ||
       "sway" in data ||
-      "title" in data ||
-      "tree" in data
+      "title" in data
     )
   );
 }
@@ -166,11 +165,11 @@ export function isTemplate(data: any): data is Template {
       "cases" in data ||
       "caste" in data ||
       "match" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -189,11 +188,11 @@ export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
       "match" in data ||
       "move" in data ||
       "name" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -204,6 +203,7 @@ export function isMove(data: any): data is Move {
     typeof data === "object" &&
     data !== null &&
     "name" in data &&
+    "origin" in data &&
     "tree" in data &&
     !(
       "aspect" in data ||
@@ -229,12 +229,12 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "caste" in data ||
       "match" in data ||
       "name" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "template" in data ||
       "title" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -250,11 +250,11 @@ export function isPronoun(data: any): data is Pronoun {
       "aspect" in data ||
       "caste" in data ||
       "match" in data ||
+      "origin" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -271,10 +271,10 @@ export function isQuirk(data: any): data is Quirk {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "origin" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "tree" in data ||
       "type" in data
     )
   );
@@ -335,15 +335,22 @@ export const TemplatesOnTraitsSchema = z.object({
   traitID: z.number(),
 });
 
-export const MoveSchema = z.object({
-  id: z.number().optional(),
-  name: z.string(),
-  desc: z.string().optional(),
-  tree: z.nativeEnum(TreeName),
-  source: TraitSchema.optional(),
-  sourceID: z.number().optional(),
-  traitIDs: z.number().array().optional(),
-});
+export const MoveSchema = z
+  .object({
+    id: z.number().optional(),
+    name: z.string(),
+    desc: z.string().optional(),
+    origin: z.nativeEnum(TreeName),
+    originID: z.number().optional(),
+    traitIDs: z.number().array().optional(),
+  })
+  .refine((data) => {
+    if (data.originID == undefined && data.origin != TreeName.GENERICS) {
+      return false;
+    } else {
+      return true;
+    }
+  });
 
 export const MovesOnTraitsSchema = z.object({
   id: z.number().optional(),
@@ -394,5 +401,18 @@ export function toTraitName(value: string): TraitName {
       return TraitName.TAGS;
     default:
       return TraitName.TAGS;
+  }
+}
+
+export function toTreeName(value: string): TreeName {
+  switch (value) {
+    case "TREES":
+      return TreeName.TREES;
+    case "TEMPLATES":
+      return TreeName.TEMPLATES;
+    case "GENERICS":
+      return TreeName.GENERICS;
+    default:
+      return TreeName.GENERICS;
   }
 }

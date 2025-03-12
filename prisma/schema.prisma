@@ -17,7 +17,6 @@ model Trait {
   zodiacAspect   Zodiac[]            @relation(name: "Aspect")
   trees          Tree[]
   templateTraits TemplatesOnTraits[]
-  moveSources    Move[]
   moveTraits     MovesOnTraits[]
 
   @@map("traits")
@@ -72,9 +71,8 @@ model Move {
   id       Int             @id @default(autoincrement())
   name     String          @unique
   desc     String?
-  tree     TreeName
-  source   Trait?          @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  sourceID Int?
+  origin   TreeName
+  originID Int?
   traits   MovesOnTraits[]
 
   @@map("moves")

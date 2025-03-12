@@ -45,8 +45,8 @@ export async function PUT(
           data: {
             name: responseData.name,
             desc: responseData.desc,
-            tree: responseData.tree,
-            sourceID: responseData.sourceID,
+            origin: responseData.origin,
+            originID: requestData.originID,
           },
           where: {
             id,

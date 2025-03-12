@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
           data: {
             name: responseData.name,
             desc: responseData.desc,
-            tree: responseData.tree,
-            sourceID: responseData.sourceID,
+            origin: responseData.origin,
+            originID: requestData.originID,
           },
         });
         return NextResponse.json({ move }, { status: 200 });
