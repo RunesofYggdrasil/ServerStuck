@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
-import { Quirk, QuirkSchema } from "@/app/lib/definitions";
+import { Quirk, QuirkSchema } from "@/app/lib/prisma-definitions";
 
 export async function GET(
   request: NextRequest,

@@ -8,7 +8,7 @@ import {
   MovesOnTraits,
   Pronoun,
   Quirk,
-} from "@/app/lib/definitions";
+} from "@/app/lib/prisma-definitions";
 import {
   isTrait,
   isZodiac,
@@ -19,7 +19,7 @@ import {
   isMovesOnTraits,
   isPronoun,
   isQuirk,
-} from "@/app/lib/definitions";
+} from "@/app/lib/prisma-definitions";
 
 // https://github.com/colinhacks/zod
 export function sanitize(data: Zodiac): Zodiac | null;

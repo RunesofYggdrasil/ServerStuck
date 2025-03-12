@@ -4,7 +4,7 @@ import { sanitize } from "@/app/api/sanitize";
 import {
   TemplatesOnTraits,
   TemplatesOnTraitsSchema,
-} from "@/app/lib/definitions";
+} from "@/app/lib/prisma-definitions";
 
 export async function GET(request: NextRequest) {
   try {

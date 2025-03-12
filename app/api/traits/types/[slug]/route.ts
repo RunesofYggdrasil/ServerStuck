@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
-import { toTraitName } from "@/app/lib/definitions";
+import { toTraitName } from "@/app/lib/prisma-definitions";
 
 export async function GET(
   request: NextRequest,

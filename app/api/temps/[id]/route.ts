@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { sanitize } from "@/app/api/sanitize";
-import { Template, TemplateSchema } from "@/app/lib/definitions";
+import { Template, TemplateSchema } from "@/app/lib/prisma-definitions";
 
 export async function GET(
   request: NextRequest,
