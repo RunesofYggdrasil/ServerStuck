@@ -12,6 +12,7 @@
     "dropdb": "dotenv -e .env.local -- npx prisma db push --force-reset"
   },
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "@prisma/extension-accelerate": "^1.2.2",
     "dotenv": "^16.4.7",
     "next": "15.2.1",
@@ -26,7 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
-    "prisma": "^6.4.1",
+    "prisma": "^6.5.0",
     "tsx": "^4.19.3",
     "typescript": "^5"
   }

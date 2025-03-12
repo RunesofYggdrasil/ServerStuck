@@ -29,9 +29,9 @@ COPY --from=builder /app/public ./public
 
 USER nextjs
 
-EXPOSE 3001
+EXPOSE 80
 
-ENV PORT=3001
+ENV PORT=80
 
 # RUN npm run build
 CMD ["npm", "start"] 
