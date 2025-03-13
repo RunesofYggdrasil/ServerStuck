@@ -41,4 +41,4 @@ EXPOSE 3001
 ENV PORT=3001
 
 # RUN npm run build
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "server.js"]
