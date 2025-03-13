@@ -4,7 +4,7 @@ FROM base AS deps
 
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package.json package-lock.json package*.json ./
+COPY package*.json ./
 RUN npm ci
 # RUN mkdir -p node_modules/.cache && chmod -R 777 node_modules/.cache
 
@@ -41,4 +41,5 @@ EXPOSE 3001
 ENV PORT=3001
 
 # RUN npm run build
-CMD ["node", "server.js"]
+# CMD ["node", "server.js"]
+CMD ["npm", "start"]
