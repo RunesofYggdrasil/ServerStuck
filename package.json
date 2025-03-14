@@ -2,11 +2,10 @@
   "name": "serverstuck-template",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "npx prisma generate && next build",
-    "start": "node server.ts",
+    "start": "node server.js",
     "lint": "next lint",
     "pushdb": "dotenv -e .env.local -- npx prisma db push",
     "formdb": "npx prisma format",
