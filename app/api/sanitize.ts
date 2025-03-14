@@ -24,6 +24,13 @@ import {
 } from "@/app/lib/prisma-definitions";
 
 // https://github.com/colinhacks/zod
+/* 
+Note: 
+  As Tree requires a source attribute but Trait can either have or not have a source attribute, 
+  the two types are considered ambiguous if Trait comes before Tree. 
+  For this reason, ensure that Tree comes first in the conditional statement.
+*/
+
 export function sanitize(data: Zodiac): Zodiac | null;
 export function sanitize(data: Tree): Tree | null;
 export function sanitize(data: Template): Template | null;

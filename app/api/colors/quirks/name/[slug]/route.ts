@@ -8,13 +8,13 @@ export async function GET(
 ) {
   try {
     const name = (await params).slug[0].toUpperCase();
-    const template = await prisma.template.findFirstOrThrow({
+    const quirk = await prisma.quirk.findFirstOrThrow({
       where: {
         name,
       },
     });
-    const origin = ModelName.TEMPLATE;
-    const originID = template.id;
+    const origin = ModelName.QUIRK;
+    const originID = quirk.id;
     const colors = await prisma.color.findMany({
       where: {
         origin,
@@ -33,13 +33,13 @@ export async function DELETE(
 ) {
   try {
     const name = (await params).slug[0].toUpperCase();
-    const template = await prisma.template.findFirstOrThrow({
+    const quirk = await prisma.quirk.findFirstOrThrow({
       where: {
         name,
       },
     });
-    const origin = ModelName.TEMPLATE;
-    const originID = template.id;
+    const origin = ModelName.QUIRK;
+    const originID = quirk.id;
     const colors = await prisma.color.deleteMany({
       where: {
         origin,

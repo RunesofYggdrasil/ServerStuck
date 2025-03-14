@@ -4,17 +4,11 @@ import { ModelName } from "@prisma/client";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string[] }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const name = (await params).slug[0].toUpperCase();
-    const template = await prisma.template.findFirstOrThrow({
-      where: {
-        name,
-      },
-    });
-    const origin = ModelName.TEMPLATE;
-    const originID = template.id;
+    const origin = ModelName.ZODIAC;
+    const originID = Number.parseInt((await params).id);
     const colors = await prisma.color.findMany({
       where: {
         origin,
@@ -29,17 +23,11 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string[] }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const name = (await params).slug[0].toUpperCase();
-    const template = await prisma.template.findFirstOrThrow({
-      where: {
-        name,
-      },
-    });
-    const origin = ModelName.TEMPLATE;
-    const originID = template.id;
+    const origin = ModelName.ZODIAC;
+    const originID = Number.parseInt((await params).id);
     const colors = await prisma.color.deleteMany({
       where: {
         origin,
