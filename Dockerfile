@@ -48,5 +48,5 @@ EXPOSE 3000
 ENV PORT=3000
 
 # RUN npm run build
-# CMD ["node", "server.ts"]
-CMD ["npm", "start"]
+CMD ["node", "server.ts"]
+# CMD ["npm", "start"]
