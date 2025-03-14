@@ -1,4 +1,4 @@
-import { TraitName, TraitType, TreeName } from "@prisma/client";
+import { ModelName, TraitName, TraitType, TreeName } from "@prisma/client";
 import { z } from "zod";
 
 // ---
@@ -91,6 +91,13 @@ export interface Quirk {
   replace: string;
 }
 
+export interface Color {
+  id?: number | undefined;
+  hex: string;
+  origin: ModelName;
+  originID: number;
+}
+
 // ---
 // Section: User-Defined Type Guards
 // ---
@@ -105,6 +112,7 @@ export function isTrait(data: any): data is Trait {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "origin" in data ||
       "replace" in data ||
@@ -126,6 +134,7 @@ export function isZodiac(data: any): data is Zodiac {
     "title" in data &&
     !(
       "cases" in data ||
+      "hex" in data ||
       "match" in data ||
       "origin" in data ||
       "replace" in data ||
@@ -146,6 +155,7 @@ export function isTree(data: any): data is Tree {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "origin" in data ||
       "replace" in data ||
@@ -164,6 +174,7 @@ export function isTemplate(data: any): data is Template {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "origin" in data ||
       "replace" in data ||
@@ -185,6 +196,7 @@ export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "move" in data ||
       "name" in data ||
@@ -209,6 +221,7 @@ export function isMove(data: any): data is Move {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "replace" in data ||
       "sway" in data ||
@@ -227,6 +240,7 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "name" in data ||
       "origin" in data ||
@@ -249,6 +263,7 @@ export function isPronoun(data: any): data is Pronoun {
     !(
       "aspect" in data ||
       "caste" in data ||
+      "hex" in data ||
       "match" in data ||
       "origin" in data ||
       "replace" in data ||
@@ -271,6 +286,7 @@ export function isQuirk(data: any): data is Quirk {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "hex" in data ||
       "origin" in data ||
       "source" in data ||
       "sway" in data ||
@@ -280,12 +296,35 @@ export function isQuirk(data: any): data is Quirk {
   );
 }
 
+export function isColor(data: any): data is Color {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "hex" in data &&
+    "origin" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "match" in data ||
+      "name" in data ||
+      "replace" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data ||
+      "type" in data
+    )
+  );
+}
+
 // ---
 // Section: Regex
 // ---
 
-const zodiacRegex: RegExp =
-  /(Sign\sof\sthe\s|SIGN\sOF\sTHE\s)([A-Z][A-Za-z]*\s(?:(?=[A-Z])[A-Z][A-Za-z]*|))/;
+const zodiacTitleRegex: RegExp =
+  /^(Sign\sof\sthe\s|SIGN\sOF\sTHE\s)([A-Z][A-Za-z]*\s(?:(?=[A-Z])[A-Z][A-Za-z]*|))$/;
+const quirkMatchRegex: RegExp = /^\/.*\/[ADJUgimsux]{0,10}$/;
+const hexRegex: RegExp = /^#?[0-9A-Fa-f]{6}$/;
 
 // ---
 // Section: Schemas
@@ -293,15 +332,24 @@ const zodiacRegex: RegExp =
 
 export const TraitSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
   desc: z.string().optional(),
   type: z.nativeEnum(TraitName),
 });
 
 export const ZodiacSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
-  title: z.string().regex(zodiacRegex),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
+  title: z
+    .string()
+    .regex(zodiacTitleRegex)
+    .transform((value) => {
+      return value.toUpperCase();
+    }),
   caste: TraitSchema,
   sway: TraitSchema,
   aspect: TraitSchema,
@@ -312,7 +360,9 @@ export const ZodiacSchema = z.object({
 
 export const TreeSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
   desc: z.string().optional(),
   type: z.nativeEnum(TraitName),
   source: TraitSchema,
@@ -321,7 +371,9 @@ export const TreeSchema = z.object({
 
 export const TemplateSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
   desc: z.string().optional(),
   traitIDs: z.number().array().optional(),
 });
@@ -338,7 +390,9 @@ export const TemplatesOnTraitsSchema = z.object({
 export const MoveSchema = z
   .object({
     id: z.number().optional(),
-    name: z.string(),
+    name: z.string().transform((value) => {
+      return value.toUpperCase();
+    }),
     desc: z.string().optional(),
     origin: z.nativeEnum(TreeName),
     originID: z.number().optional(),
@@ -363,24 +417,68 @@ export const MovesOnTraitsSchema = z.object({
 
 export const PronounSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
   cases: z
     .object({
-      nom: z.string(),
-      obj: z.string(),
-      det: z.string(),
-      pos: z.string(),
-      ref: z.string(),
+      nom: z.string().transform((value) => {
+        return value.toUpperCase();
+      }),
+      obj: z.string().transform((value) => {
+        return value.toUpperCase();
+      }),
+      det: z.string().transform((value) => {
+        return value.toUpperCase();
+      }),
+      pos: z.string().transform((value) => {
+        return value.toUpperCase();
+      }),
+      ref: z.string().transform((value) => {
+        return value.toUpperCase();
+      }),
     })
-    .or(z.string().array()),
+    .or(
+      z
+        .string()
+        .array()
+        .length(5)
+        .transform((value) => {
+          return [
+            value[0].toUpperCase(),
+            value[1].toUpperCase(),
+            value[2].toUpperCase(),
+            value[3].toUpperCase(),
+            value[4].toUpperCase(),
+          ];
+        })
+    ),
 });
 
 export const QuirkSchema = z.object({
   id: z.number().optional(),
-  name: z.string(),
+  name: z.string().transform((value) => {
+    return value.toUpperCase();
+  }),
   desc: z.string().optional(),
-  match: z.string(),
+  match: z.string().regex(quirkMatchRegex),
   replace: z.string(),
+});
+
+export const ColorSchema = z.object({
+  id: z.number().optional(),
+  hex: z
+    .string()
+    .regex(hexRegex)
+    .refine((value) => {
+      if (value.startsWith("#")) {
+        return value.substring(1);
+      } else {
+        return value;
+      }
+    }),
+  origin: z.nativeEnum(ModelName),
+  originID: z.number(),
 });
 
 // ---
@@ -414,5 +512,26 @@ export function toTreeName(value: string): TreeName {
       return TreeName.GENERICS;
     default:
       return TreeName.GENERICS;
+  }
+}
+
+export function toModelName(value: string): ModelName {
+  switch (value) {
+    case "TRAIT":
+      return ModelName.TRAIT;
+    case "ZODIAC":
+      return ModelName.ZODIAC;
+    case "TREE":
+      return ModelName.TREE;
+    case "TEMPLATE":
+      return ModelName.TEMPLATE;
+    case "MOVE":
+      return ModelName.MOVE;
+    case "PRONOUN":
+      return ModelName.PRONOUN;
+    case "QUIRK":
+      return ModelName.QUIRK;
+    default:
+      return ModelName.TRAIT;
   }
 }

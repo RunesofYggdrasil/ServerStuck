@@ -1,0 +1,40 @@
+.navigationOutside {
+  width: var(--width-bg-1);
+  height: 100px;
+  margin: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: var(--color-bg-1);
+  color: var(--color-tx-1);
+}
+.navigationInside {
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  height: 72px;
+  line-height: 72px;
+  position: relative;
+}
+.navigationLeft {
+  position: absolute;
+  left: 20px;
+}
+.navigationRight {
+  position: absolute;
+  right: 20px;
+}
+.navigationRight ul {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+.navigationRight li {
+  margin-left: 20px;
+}
+
+@media screen and (max-width: 600px) {
+  .navigationRight ul {
+    flex-direction: column;
+    list-style: none;
+  }
+}

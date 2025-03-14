@@ -1,12 +1,16 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Variable Section: Sizing */
+  --width-bg-1: calc(100vw - 16px);
+
+  /* Variable Section: Colors */
+  --color-bg-1: #ffffff;
+  --color-tx-1: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg-1: #0a0a0a;
+    --color-tx-1: #ededed;
   }
 }
 
@@ -17,8 +21,8 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--color-tx-1);
+  background: var(--color-bg-1);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

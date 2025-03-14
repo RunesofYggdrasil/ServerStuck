@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -112,6 +112,15 @@ model Quirk {
   @@map("quirks")
 }
 
+model Color {
+  id       Int       @id @default(autoincrement())
+  hex      String
+  origin   ModelName
+  originID Int
+
+  @@map("colors")
+}
+
 enum TraitName {
   CASTES
   SWAYS
@@ -136,4 +145,16 @@ enum TreeName {
   GENERICS
 
   @@map("tree_name_enum")
+}
+
+enum ModelName {
+  TRAIT
+  ZODIAC
+  TREE
+  TEMPLATE
+  MOVE
+  PRONOUN
+  QUIRK
+
+  @@map("model_name_enum")
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "npx prisma generate && next build",
-    "start": "next start",
+    "start": "node server.ts",
     "lint": "next lint",
     "pushdb": "dotenv -e .env.local -- npx prisma db push",
     "formdb": "npx prisma format",

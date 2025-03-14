@@ -27,8 +27,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# COPY --from=builder /app/node_modules ./node_modules
+# COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/public ./public
 
@@ -45,5 +45,5 @@ EXPOSE 3001
 ENV PORT=3001
 
 # RUN npm run build
-CMD ["node", "server.ts"]
-# CMD ["npm", "start"]
+# CMD ["node", "server.ts"]
+CMD ["npm", "start"]

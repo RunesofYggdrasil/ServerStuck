@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
-import { sanitize } from "@/app/api/sanitize";
-import {
-  MovesOnTraits,
-  MovesOnTraitsSchema,
-} from "@/app/lib/prisma-definitions";
+import { TreeName } from "@prisma/client";
 
 export async function GET(
   request: NextRequest,
@@ -17,9 +13,11 @@ export async function GET(
         name,
       },
     });
+    const origin = TreeName.TEMPLATES;
     const originID = template.id;
     const moves = await prisma.move.findMany({
       where: {
+        origin,
         originID,
       },
     });
@@ -40,9 +38,11 @@ export async function DELETE(
         name,
       },
     });
+    const origin = TreeName.TEMPLATES;
     const originID = template.id;
     const moves = await prisma.move.deleteMany({
       where: {
+        origin,
         originID,
       },
     });

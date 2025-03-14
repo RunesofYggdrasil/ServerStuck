@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
-import { TreeName } from "@prisma/client";
+import { ModelName } from "@prisma/client";
 
 export async function GET(
   request: NextRequest,
@@ -8,20 +8,20 @@ export async function GET(
 ) {
   try {
     const name = (await params).slug[0].toUpperCase();
-    const tree = await prisma.tree.findFirstOrThrow({
+    const trait = await prisma.trait.findFirstOrThrow({
       where: {
         name,
       },
     });
-    const origin = TreeName.TREES;
-    const originID = tree.id;
-    const moves = await prisma.move.findMany({
+    const origin = ModelName.TRAIT;
+    const originID = trait.id;
+    const colors = await prisma.color.findMany({
       where: {
         origin,
         originID,
       },
     });
-    return NextResponse.json({ moves }, { status: 200 });
+    return NextResponse.json({ colors }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -33,20 +33,20 @@ export async function DELETE(
 ) {
   try {
     const name = (await params).slug[0].toUpperCase();
-    const tree = await prisma.tree.findFirstOrThrow({
+    const trait = await prisma.trait.findFirstOrThrow({
       where: {
         name,
       },
     });
-    const origin = TreeName.TREES;
-    const originID = tree.id;
-    const moves = await prisma.move.deleteMany({
+    const origin = ModelName.TRAIT;
+    const originID = trait.id;
+    const colors = await prisma.color.deleteMany({
       where: {
         origin,
         originID,
       },
     });
-    return NextResponse.json({ moves }, { status: 200 });
+    return NextResponse.json({ colors }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }

@@ -2,17 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
 import { TreeName } from "@prisma/client";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const origin = TreeName.TREES;
-    const originID = Number.parseInt((await params).id);
+    const origin = TreeName.GENERICS;
     const moves = await prisma.move.findMany({
       where: {
         origin,
-        originID,
       },
     });
     return NextResponse.json({ moves }, { status: 200 });
@@ -23,15 +18,13 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const origin = TreeName.TREES;
-    const originID = Number.parseInt((await params).id);
+    const origin = TreeName.GENERICS;
     const moves = await prisma.move.deleteMany({
       where: {
         origin,
-        originID,
       },
     });
     return NextResponse.json({ moves }, { status: 200 });
