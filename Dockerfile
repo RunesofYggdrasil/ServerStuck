@@ -45,5 +45,5 @@ EXPOSE 3001
 ENV PORT=3001
 
 # RUN npm run build
-CMD ["node", "server.js"]
+CMD ["node", "server.ts"]
 # CMD ["npm", "start"]
