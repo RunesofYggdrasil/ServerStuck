@@ -127,7 +127,7 @@ model Color {
 
 model ExpressionBuilder {
   id           Int                 @id @default(autoincrement())
-  name         String?
+  name         String?             @unique
   public       Boolean
   type         ExpressionType
   move         Move?               @relation(name: "Part", fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
