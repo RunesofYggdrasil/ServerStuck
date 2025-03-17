@@ -70,13 +70,15 @@ model TemplatesOnTraits {
 }
 
 model Move {
-  id          Int                 @id @default(autoincrement())
-  name        String              @unique
-  desc        String?
-  origin      TreeName
-  originID    Int?
-  traits      MovesOnTraits[]
-  expressions ExpressionBuilder[]
+  id           Int                 @id @default(autoincrement())
+  name         String              @unique
+  desc         String?
+  origin       TreeName
+  originID     Int?
+  expression   ExpressionBuilder?  @relation(name: "Requirements", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  expressionID Int?
+  traits       MovesOnTraits[]
+  expressions  ExpressionBuilder[] @relation(name: "Part")
 
   @@map("moves")
 }
@@ -128,11 +130,12 @@ model ExpressionBuilder {
   name         String?
   public       Boolean
   type         ExpressionType
-  move         Move?               @relation(fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  move         Move?               @relation(name: "Part", fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   moveID       Int?
   expression   ExpressionBuilder?  @relation(name: "ExpressionBuilderToExpressionBuilder", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   expressionID Int?
   expressions  ExpressionBuilder[] @relation(name: "ExpressionBuilderToExpressionBuilder")
+  moves        Move[]              @relation(name: "Requirements")
 
   @@map("expression_builders")
 }

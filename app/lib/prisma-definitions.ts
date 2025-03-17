@@ -22,9 +22,9 @@ export interface Zodiac {
   id?: number | undefined;
   name: string;
   title: string;
-  caste: Trait;
-  sway: Trait;
-  aspect: Trait;
+  caste?: Trait | undefined;
+  sway?: Trait | undefined;
+  aspect?: Trait | undefined;
   casteID: number;
   swayID: number;
   aspectID: number;
@@ -35,7 +35,7 @@ export interface Tree {
   name: string;
   desc?: string | undefined;
   type: TraitName;
-  source: Trait;
+  source?: Trait | undefined;
   sourceID: number;
 }
 
@@ -50,9 +50,9 @@ export interface Template {
 export interface TemplatesOnTraits {
   id?: number | undefined;
   type: TraitType;
-  template: Template;
+  template?: Template | undefined;
   templateID: number;
-  trait: Trait;
+  trait?: Trait | undefined;
   traitID: number;
 }
 
@@ -64,14 +64,16 @@ export interface Move {
   originID?: number | undefined;
   traits?: MovesOnTraits[] | undefined;
   traitIDs?: number[] | undefined;
+  expression?: ExpressionBuilder | undefined;
+  expressionID?: number;
 }
 
 export interface MovesOnTraits {
   id?: number | undefined;
   type: TraitType;
-  move: Move;
+  move?: Move | undefined;
   moveID: number;
-  trait: Trait;
+  trait?: Trait | undefined;
   traitID: number;
 }
 
@@ -400,9 +402,9 @@ export const ZodiacSchema = z.object({
     .transform((value) => {
       return value.toUpperCase();
     }),
-  caste: TraitSchema,
-  sway: TraitSchema,
-  aspect: TraitSchema,
+  caste: TraitSchema.optional(),
+  sway: TraitSchema.optional(),
+  aspect: TraitSchema.optional(),
   casteID: z.number(),
   swayID: z.number(),
   aspectID: z.number(),
@@ -415,7 +417,7 @@ export const TreeSchema = z.object({
   }),
   desc: z.string().optional(),
   type: z.nativeEnum(TraitName),
-  source: TraitSchema,
+  source: TraitSchema.optional(),
   sourceID: z.number(),
 });
 
@@ -425,19 +427,18 @@ export const TemplateSchema = z.object({
     return value.toUpperCase();
   }),
   desc: z.string().optional(),
-  traitIDs: z.number().array().optional(),
 });
 
 export const TemplatesOnTraitsSchema = z.object({
   id: z.number().optional(),
   type: z.nativeEnum(TraitType),
-  template: TemplateSchema,
+  template: TemplateSchema.optional(),
   templateID: z.number(),
-  trait: TraitSchema,
+  trait: TraitSchema.optional(),
   traitID: z.number(),
 });
 
-export const MoveSchema = z
+const MoveSchema = z
   .object({
     id: z.number().optional(),
     name: z.string().transform((value) => {
@@ -446,7 +447,8 @@ export const MoveSchema = z
     desc: z.string().optional(),
     origin: z.nativeEnum(TreeName),
     originID: z.number().optional(),
-    traitIDs: z.number().array().optional(),
+    expression: z.lazy(() => ExpressionBuilderSchema).optional(),
+    expressionID: z.number().optional(),
   })
   .refine((data) => {
     if (data.originID == undefined && data.origin != TreeName.GENERICS) {
@@ -459,9 +461,9 @@ export const MoveSchema = z
 export const MovesOnTraitsSchema = z.object({
   id: z.number().optional(),
   type: z.nativeEnum(TraitType),
-  move: MoveSchema,
+  move: MoveSchema.optional(),
   moveID: z.number(),
-  trait: TraitSchema,
+  trait: TraitSchema.optional(),
   traitID: z.number(),
 });
 
@@ -531,27 +533,32 @@ export const ColorSchema = z.object({
   originID: z.number(),
 });
 
-const ExpressionSchema = z.object({
-  id: z.number().optional(),
-  name: z.string().optional(),
-  public: z.boolean(),
-  type: z.nativeEnum(ExpressionType),
-  move: MoveSchema.optional(),
-  moveID: z.number().optional(),
-});
-export const ExpressionBuilderSchema = ExpressionSchema.extend({
-  expression: ExpressionSchema.optional(),
-  expressionID: z.number().optional(),
-}).refine((data) => {
-  if (
-    (data.move != undefined && data.moveID != undefined) ||
-    (data.expression != undefined && data.expressionID != undefined)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-});
+export const ExpressionBuilderSchema: z.ZodType<ExpressionBuilder> = z.lazy(
+  () =>
+    z
+      .object({
+        id: z.number().optional(),
+        name: z
+          .string()
+          .transform((value) => {
+            return value.toUpperCase();
+          })
+          .optional(),
+        public: z.boolean(),
+        type: z.nativeEnum(ExpressionType),
+        move: MoveSchema.optional(),
+        moveID: z.number().optional(),
+        expression: ExpressionBuilderSchema.optional(),
+        expressionID: z.number().optional(),
+      })
+      .refine((data) => {
+        if (data.moveID != undefined || data.expressionID != undefined) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+);
 
 // ---
 // Section: Enums
