@@ -5,14 +5,5 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./:/app
-      - /app/node_modules
-      - /app/.next
     env_file:
       - .env.local
-  #   networks:
-  #     - backend
-  # networks:
-  #   backend:
-  #     driver: bridge
