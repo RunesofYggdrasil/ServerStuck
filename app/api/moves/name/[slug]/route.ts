@@ -49,7 +49,7 @@ export async function PUT(
             name: responseData.name,
             desc: responseData.desc,
             origin: responseData.origin,
-            originID: requestData.originID,
+            originID: responseData.originID,
           },
           where: {
             name,

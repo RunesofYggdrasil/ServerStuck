@@ -38,7 +38,7 @@ export async function POST(
         data: {
           type: responseData.type,
           templateID: templateID,
-          traitID: requestData.traitID,
+          traitID: responseData.traitID,
         },
       });
       return NextResponse.json({ templatesOnTraits }, { status: 200 });

@@ -37,7 +37,7 @@ export async function POST(
         data: {
           type: responseData.type,
           moveID: moveID,
-          traitID: requestData.traitID,
+          traitID: responseData.traitID,
         },
       });
       return NextResponse.json({ movesOnTraits }, { status: 200 });

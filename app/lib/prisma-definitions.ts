@@ -438,7 +438,7 @@ export const TemplatesOnTraitsSchema = z.object({
   traitID: z.number(),
 });
 
-const MoveSchema = z
+export const MoveSchema = z
   .object({
     id: z.number().optional(),
     name: z.string().transform((value) => {
