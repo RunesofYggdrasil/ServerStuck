@@ -7,6 +7,7 @@
     "build": "npx prisma generate && next build",
     "start": "node server.js",
     "lint": "next lint",
+    "genedb": "dotenv -e .env.local -- npx prisma generate",
     "pushdb": "dotenv -e .env.local -- npx prisma db push",
     "formdb": "npx prisma format",
     "dropdb": "dotenv -e .env.local -- npx prisma db push --force-reset"

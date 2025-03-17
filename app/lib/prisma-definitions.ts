@@ -1,4 +1,10 @@
-import { ModelName, TraitName, TraitType, TreeName } from "@prisma/client";
+import {
+  ExpressionType,
+  ModelName,
+  TraitName,
+  TraitType,
+  TreeName,
+} from "@prisma/client";
 import { z } from "zod";
 
 // ---
@@ -98,6 +104,17 @@ export interface Color {
   originID: number;
 }
 
+export interface ExpressionBuilder {
+  id?: number | undefined;
+  name?: string | undefined;
+  public: boolean;
+  type: ExpressionType;
+  move?: Move | undefined;
+  moveID?: number | undefined;
+  expression?: ExpressionBuilder | undefined;
+  expressionID?: number | undefined;
+}
+
 // ---
 // Section: User-Defined Type Guards
 // ---
@@ -115,6 +132,7 @@ export function isTrait(data: any): data is Trait {
       "hex" in data ||
       "match" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -137,6 +155,7 @@ export function isZodiac(data: any): data is Zodiac {
       "hex" in data ||
       "match" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "type" in data
@@ -158,6 +177,7 @@ export function isTree(data: any): data is Tree {
       "hex" in data ||
       "match" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "sway" in data ||
       "title" in data
@@ -177,6 +197,7 @@ export function isTemplate(data: any): data is Template {
       "hex" in data ||
       "match" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -201,6 +222,7 @@ export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
       "move" in data ||
       "name" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -223,6 +245,7 @@ export function isMove(data: any): data is Move {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "public" in data ||
       "replace" in data ||
       "sway" in data ||
       "title" in data
@@ -244,6 +267,7 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "match" in data ||
       "name" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -266,6 +290,7 @@ export function isPronoun(data: any): data is Pronoun {
       "hex" in data ||
       "match" in data ||
       "origin" in data ||
+      "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -288,6 +313,7 @@ export function isQuirk(data: any): data is Quirk {
       "caste" in data ||
       "hex" in data ||
       "origin" in data ||
+      "public" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
@@ -308,11 +334,35 @@ export function isColor(data: any): data is Color {
       "caste" in data ||
       "match" in data ||
       "name" in data ||
+      "public" in data ||
       "replace" in data ||
+      "source" in data ||
       "sway" in data ||
       "title" in data ||
       "tree" in data ||
       "type" in data
+    )
+  );
+}
+
+export function isExpressionBuilder(data: any): data is ExpressionBuilder {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "public" in data &&
+    "type" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "hex" in data ||
+      "match" in data ||
+      "origin" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "tree" in data
     )
   );
 }
@@ -481,6 +531,28 @@ export const ColorSchema = z.object({
   originID: z.number(),
 });
 
+const ExpressionSchema = z.object({
+  id: z.number().optional(),
+  name: z.string().optional(),
+  public: z.boolean(),
+  type: z.nativeEnum(ExpressionType),
+  move: MoveSchema.optional(),
+  moveID: z.number().optional(),
+});
+export const ExpressionBuilderSchema = ExpressionSchema.extend({
+  expression: ExpressionSchema.optional(),
+  expressionID: z.number().optional(),
+}).refine((data) => {
+  if (
+    (data.move != undefined && data.moveID != undefined) ||
+    (data.expression != undefined && data.expressionID != undefined)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
 // ---
 // Section: Enums
 // ---
@@ -533,5 +605,18 @@ export function toModelName(value: string): ModelName {
       return ModelName.QUIRK;
     default:
       return ModelName.TRAIT;
+  }
+}
+
+export function toExpressionType(value: string): ExpressionType {
+  switch (value) {
+    case "AND":
+      return ExpressionType.AND;
+    case "OR":
+      return ExpressionType.OR;
+    case "NOT":
+      return ExpressionType.NOT;
+    default:
+      return ExpressionType.AND;
   }
 }

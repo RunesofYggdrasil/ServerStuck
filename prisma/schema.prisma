@@ -70,12 +70,13 @@ model TemplatesOnTraits {
 }
 
 model Move {
-  id       Int             @id @default(autoincrement())
-  name     String          @unique
-  desc     String?
-  origin   TreeName
-  originID Int?
-  traits   MovesOnTraits[]
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  desc        String?
+  origin      TreeName
+  originID    Int?
+  traits      MovesOnTraits[]
+  expressions ExpressionBuilder[]
 
   @@map("moves")
 }
@@ -122,6 +123,20 @@ model Color {
   @@map("colors")
 }
 
+model ExpressionBuilder {
+  id           Int                 @id @default(autoincrement())
+  name         String?
+  public       Boolean
+  type         ExpressionType
+  move         Move?               @relation(fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  moveID       Int?
+  expression   ExpressionBuilder?  @relation(name: "ExpressionBuilderToExpressionBuilder", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  expressionID Int?
+  expressions  ExpressionBuilder[] @relation(name: "ExpressionBuilderToExpressionBuilder")
+
+  @@map("expression_builders")
+}
+
 enum TraitName {
   CASTES
   SWAYS
@@ -158,4 +173,12 @@ enum ModelName {
   QUIRK
 
   @@map("model_name_enum")
+}
+
+enum ExpressionType {
+  AND
+  OR
+  NOT
+
+  @@map("expression_type_enum")
 }
