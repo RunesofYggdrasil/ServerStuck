@@ -1,3 +1,11 @@
 .validInput {
-  color: var(--color-bg-1);
+  background-color: var(--color-bg-1);
+}
+
+.invalidInput {
+  background-color: var(--color-bg-3);
+}
+
+.emptyInput {
+  background-color: var(--color-bg-4);
 }

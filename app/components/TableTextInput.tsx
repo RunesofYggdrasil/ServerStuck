@@ -7,6 +7,7 @@ import {
   LususSchema,
   NameSchema,
   OtherSchema,
+  QuadrantSchema,
   SummarySchema,
   TrollTagSchema,
 } from "@/app/lib/input-definitions";
@@ -45,21 +46,20 @@ const handleChange = (
     try {
       let newText = "";
       if (placeholder == "NAME:") {
-        newText = NameSchema.parse(textValue.toUpperCase()).trim();
+        newText = NameSchema.parse(textValue.toUpperCase());
       } else if (placeholder == "AGE:") {
-        newText = AgeSchema.parse(textValue).trim();
+        newText = AgeSchema.parse(textValue);
       } else if (placeholder == "GENDER:") {
         newText = GenderSchema.parse(textValue.toUpperCase());
       } else if (placeholder == "TROLLTAG:") {
-        newText = TrollTagSchema.parse(textValue).trim();
-      } else if (placeholder == "MATESPRIT(S):") {
-        newText = NameSchema.parse(textValue.toUpperCase());
-      } else if (placeholder == "MOIRAIL(S):") {
-        newText = NameSchema.parse(textValue.toUpperCase());
-      } else if (placeholder == "AUSPISTICE(S):") {
-        newText = NameSchema.parse(textValue.toUpperCase());
-      } else if (placeholder == "KISMESIS(ES):") {
-        newText = NameSchema.parse(textValue.toUpperCase());
+        newText = TrollTagSchema.parse(textValue);
+      } else if (
+        placeholder == "MATESPRIT(S):" ||
+        placeholder == "MOIRAIL(S):" ||
+        placeholder == "AUSPISTICE(S):" ||
+        placeholder == "KISMESIS(ES):"
+      ) {
+        newText = QuadrantSchema.parse(textValue.toUpperCase());
       } else if (placeholder == "LUSUS:") {
         newText = LususSchema.parse(textValue.toUpperCase());
       } else if (placeholder == "OTHER INFORMATION:") {
