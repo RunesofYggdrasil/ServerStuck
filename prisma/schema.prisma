@@ -95,13 +95,14 @@ model MovesOnTraits {
 }
 
 model Pronoun {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  nom  String
-  obj  String
-  det  String
-  pos  String
-  ref  String
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  nom    String
+  obj    String
+  det    String
+  pos    String
+  ref    String
+  plural Boolean
 
   @@map("pronouns")
 }
@@ -114,6 +115,12 @@ model Quirk {
   replace String
 
   @@map("quirks")
+}
+
+model Message {
+  id      Int         @id @default(autoincrement())
+  type    MessageType
+  message String
 }
 
 model Color {
@@ -164,6 +171,13 @@ enum TreeName {
   GENERICS
 
   @@map("tree_name_enum")
+}
+
+enum MessageType {
+  PRONOUN
+  QUIRK
+
+  @@map("message_type_enum")
 }
 
 enum ModelName {

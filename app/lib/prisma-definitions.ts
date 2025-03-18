@@ -1,5 +1,6 @@
 import {
   ExpressionType,
+  MessageType,
   ModelName,
   TraitName,
   TraitType,
@@ -89,6 +90,7 @@ export interface Pronoun {
         ref: string;
       }
     | string[];
+  plural: boolean;
 }
 
 export interface Quirk {
@@ -97,6 +99,12 @@ export interface Quirk {
   desc?: string | undefined;
   match: string;
   replace: string;
+}
+
+export interface Message {
+  id?: number | undefined;
+  type: MessageType;
+  message: string;
 }
 
 export interface Color {
@@ -133,7 +141,9 @@ export function isTrait(data: any): data is Trait {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -156,7 +166,9 @@ export function isZodiac(data: any): data is Zodiac {
       "cases" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -178,7 +190,9 @@ export function isTree(data: any): data is Tree {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "sway" in data ||
@@ -198,7 +212,9 @@ export function isTemplate(data: any): data is Template {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -221,9 +237,11 @@ export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "move" in data ||
       "name" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -247,6 +265,8 @@ export function isMove(data: any): data is Move {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "sway" in data ||
@@ -267,8 +287,10 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "name" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -286,11 +308,13 @@ export function isPronoun(data: any): data is Pronoun {
     data !== null &&
     "cases" in data &&
     "name" in data &&
+    "plural" in data &&
     !(
       "aspect" in data ||
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
       "public" in data ||
       "replace" in data ||
@@ -314,12 +338,38 @@ export function isQuirk(data: any): data is Quirk {
       "cases" in data ||
       "caste" in data ||
       "hex" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "public" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
       "type" in data
+    )
+  );
+}
+
+export function isMessage(data: any): data is Message {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "message" in data &&
+    "type" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "hex" in data ||
+      "match" in data ||
+      "name" in data ||
+      "origin" in data ||
+      "plural" in data ||
+      "public" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data
     )
   );
 }
@@ -335,7 +385,9 @@ export function isColor(data: any): data is Color {
       "cases" in data ||
       "caste" in data ||
       "match" in data ||
+      "message" in data ||
       "name" in data ||
+      "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
@@ -359,7 +411,9 @@ export function isExpressionBuilder(data: any): data is ExpressionBuilder {
       "caste" in data ||
       "hex" in data ||
       "match" in data ||
+      "message" in data ||
       "origin" in data ||
+      "plural" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
@@ -505,6 +559,7 @@ export const PronounSchema = z.object({
           ];
         })
     ),
+  plural: z.boolean(),
 });
 
 export const QuirkSchema = z.object({
@@ -516,6 +571,19 @@ export const QuirkSchema = z.object({
   match: z.string().regex(quirkMatchRegex),
   replace: z.string(),
 });
+
+export const MessageSchema = z
+  .object({
+    id: z.number().optional(),
+    type: z.nativeEnum(MessageType),
+    message: z.string(),
+  })
+  .transform((data) => {
+    if (data.type == MessageType.PRONOUN) {
+      data.message = data.message.toUpperCase();
+    }
+    return data;
+  });
 
 export const ColorSchema = z.object({
   id: z.number().optional(),
@@ -591,6 +659,17 @@ export function toTreeName(value: string): TreeName {
       return TreeName.GENERICS;
     default:
       return TreeName.GENERICS;
+  }
+}
+
+export function toMessageType(value: string): MessageType {
+  switch (value) {
+    case "PRONOUN":
+      return MessageType.PRONOUN;
+    case "QUIRK":
+      return MessageType.QUIRK;
+    default:
+      return MessageType.QUIRK;
   }
 }
 
