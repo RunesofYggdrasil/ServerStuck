@@ -9,6 +9,25 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id         Int            @id @default(autoincrement())
+  username   String
+  password   String
+  permission PermissionType
+  sessions   Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  user      User     @relation(references: [id], fields: [userID], onUpdate: Cascade, onDelete: Cascade)
+  userID    Int
+  expiresAt DateTime
+
+  @@map("sessions")
+}
+
 model Trait {
   id             Int                 @id @default(autoincrement())
   name           String              @unique
@@ -59,36 +78,33 @@ model Template {
 }
 
 model TemplatesOnTraits {
-  id         Int       @id @default(autoincrement())
-  type       TraitType
-  template   Template  @relation(fields: [templateID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  template   Template @relation(fields: [templateID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   templateID Int
-  trait      Trait     @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  trait      Trait    @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   traitID    Int
 
   @@map("templates_on_traits")
 }
 
 model Move {
-  id           Int                 @id @default(autoincrement())
-  name         String              @unique
+  id           Int                @id @default(autoincrement())
+  name         String             @unique
   desc         String?
   origin       TreeName
   originID     Int?
-  expression   ExpressionBuilder?  @relation(name: "Requirements", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  expression   ExpressionBuilder? @relation(name: "Requirements", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   expressionID Int?
   traits       MovesOnTraits[]
-  expressions  ExpressionBuilder[] @relation(name: "Part")
 
   @@map("moves")
 }
 
 model MovesOnTraits {
-  id      Int       @id @default(autoincrement())
-  type    TraitType
-  move    Move      @relation(fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id      Int   @id @default(autoincrement())
+  move    Move  @relation(fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   moveID  Int
-  trait   Trait     @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  trait   Trait @relation(fields: [traitID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   traitID Int
 
   @@map("moves_on_traits")
@@ -137,14 +153,22 @@ model ExpressionBuilder {
   name         String?             @unique
   public       Boolean
   type         ExpressionType
-  move         Move?               @relation(name: "Part", fields: [moveID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  moveID       Int?
+  origin       TreeName?
+  originID     Int?
   expression   ExpressionBuilder?  @relation(name: "ExpressionBuilderToExpressionBuilder", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   expressionID Int?
   expressions  ExpressionBuilder[] @relation(name: "ExpressionBuilderToExpressionBuilder")
   moves        Move[]              @relation(name: "Requirements")
 
   @@map("expression_builders")
+}
+
+enum PermissionType {
+  USER
+  DEVELOPER
+  ADMINISTRATOR
+
+  @@map("permission_type_enum")
 }
 
 enum TraitName {
@@ -155,14 +179,6 @@ enum TraitName {
   TAGS
 
   @@map("trait_name_enum")
-}
-
-enum TraitType {
-  TAGS
-  REQUIRES
-  PREVENTS
-
-  @@map("trait_type_enum")
 }
 
 enum TreeName {

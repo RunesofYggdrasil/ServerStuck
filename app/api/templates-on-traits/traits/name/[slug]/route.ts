@@ -39,32 +39,20 @@ export async function POST(
       TemplatesOnTraitsSchema.parse(response);
     const responseData: TemplatesOnTraits | null = sanitize(requestData);
     if (responseData != null) {
-      try {
-        const name = (await params).slug[0].toUpperCase();
-        const trait = await prisma.trait.findFirstOrThrow({
-          where: {
-            name,
-          },
-        });
-        const traitID = trait.id;
-        const templatesOnTraits = await prisma.templatesOnTraits.create({
-          data: {
-            type: responseData.type,
-            templateID: responseData.templateID,
-            traitID: traitID,
-          },
-        });
-        return NextResponse.json({ templatesOnTraits }, { status: 200 });
-      } catch (error) {
-        const templatesOnTraits = await prisma.templatesOnTraits.create({
-          data: {
-            type: responseData.type,
-            templateID: responseData.templateID,
-            traitID: responseData.traitID,
-          },
-        });
-        return NextResponse.json({ templatesOnTraits }, { status: 200 });
-      }
+      const name = (await params).slug[0].toUpperCase();
+      const trait = await prisma.trait.findFirstOrThrow({
+        where: {
+          name,
+        },
+      });
+      const traitID = trait.id;
+      const templatesOnTraits = await prisma.templatesOnTraits.create({
+        data: {
+          templateID: responseData.templateID,
+          traitID: traitID,
+        },
+      });
+      return NextResponse.json({ templatesOnTraits }, { status: 200 });
     } else {
       return NextResponse.json(
         { message: "Invalid Input: TemplatesOnTraits Data" },

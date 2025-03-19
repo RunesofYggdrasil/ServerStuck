@@ -2,15 +2,30 @@ import {
   ExpressionType,
   MessageType,
   ModelName,
+  PermissionType,
   TraitName,
-  TraitType,
   TreeName,
 } from "@prisma/client";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 
 // ---
 // Section: Interfaces
 // ---
+
+export interface User {
+  id?: number | undefined;
+  username: string;
+  password: string;
+  permission: PermissionType;
+}
+
+export interface Session {
+  id: string;
+  user?: User | undefined;
+  userID: number;
+  expiresAt: Date;
+}
 
 export interface Trait {
   id?: number | undefined;
@@ -50,7 +65,6 @@ export interface Template {
 
 export interface TemplatesOnTraits {
   id?: number | undefined;
-  type: TraitType;
   template?: Template | undefined;
   templateID: number;
   trait?: Trait | undefined;
@@ -71,7 +85,6 @@ export interface Move {
 
 export interface MovesOnTraits {
   id?: number | undefined;
-  type: TraitType;
   move?: Move | undefined;
   moveID: number;
   trait?: Trait | undefined;
@@ -119,8 +132,8 @@ export interface ExpressionBuilder {
   name?: string | undefined;
   public: boolean;
   type: ExpressionType;
-  move?: Move | undefined;
-  moveID?: number | undefined;
+  origin?: TreeName | undefined;
+  originID?: number | undefined;
   expression?: ExpressionBuilder | undefined;
   expressionID?: number | undefined;
 }
@@ -128,6 +141,62 @@ export interface ExpressionBuilder {
 // ---
 // Section: User-Defined Type Guards
 // ---
+
+export function isUser(data: any): data is User {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "username" in data &&
+    "password" in data &&
+    "permission" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "expiresAt" in data ||
+      "hex" in data ||
+      "match" in data ||
+      "message" in data ||
+      "name" in data ||
+      "origin" in data ||
+      "plural" in data ||
+      "public" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "type" in data
+    )
+  );
+}
+
+export function isSession(data: any): data is Session {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "expiresAt" in data &&
+    !(
+      "aspect" in data ||
+      "cases" in data ||
+      "caste" in data ||
+      "hex" in data ||
+      "match" in data ||
+      "message" in data ||
+      "name" in data ||
+      "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
+      "plural" in data ||
+      "public" in data ||
+      "replace" in data ||
+      "source" in data ||
+      "sway" in data ||
+      "title" in data ||
+      "type" in data ||
+      "username" in data
+    )
+  );
+}
 
 export function isTrait(data: any): data is Trait {
   return (
@@ -139,16 +208,20 @@ export function isTrait(data: any): data is Trait {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
-      "title" in data
+      "title" in data ||
+      "username" in data
     )
   );
 }
@@ -164,15 +237,19 @@ export function isZodiac(data: any): data is Zodiac {
     "title" in data &&
     !(
       "cases" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -188,15 +265,19 @@ export function isTree(data: any): data is Tree {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "sway" in data ||
-      "title" in data
+      "title" in data ||
+      "username" in data
     )
   );
 }
@@ -210,17 +291,21 @@ export function isTemplate(data: any): data is Template {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -235,19 +320,23 @@ export function isTemplatesOnTraits(data: any): data is TemplatesOnTraits {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "move" in data ||
       "name" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -263,14 +352,18 @@ export function isMove(data: any): data is Move {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "sway" in data ||
-      "title" in data
+      "title" in data ||
+      "username" in data
     )
   );
 }
@@ -285,11 +378,14 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "name" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
@@ -297,7 +393,8 @@ export function isMovesOnTraits(data: any): data is MovesOnTraits {
       "sway" in data ||
       "template" in data ||
       "title" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -312,16 +409,20 @@ export function isPronoun(data: any): data is Pronoun {
     !(
       "aspect" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -337,15 +438,19 @@ export function isQuirk(data: any): data is Quirk {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -360,16 +465,20 @@ export function isMessage(data: any): data is Message {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "name" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
-      "title" in data
+      "title" in data ||
+      "username" in data
     )
   );
 }
@@ -384,9 +493,12 @@ export function isColor(data: any): data is Color {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "match" in data ||
       "message" in data ||
       "name" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "public" in data ||
       "replace" in data ||
@@ -394,7 +506,8 @@ export function isColor(data: any): data is Color {
       "sway" in data ||
       "title" in data ||
       "tree" in data ||
-      "type" in data
+      "type" in data ||
+      "username" in data
     )
   );
 }
@@ -409,16 +522,20 @@ export function isExpressionBuilder(data: any): data is ExpressionBuilder {
       "aspect" in data ||
       "cases" in data ||
       "caste" in data ||
+      "expiresAt" in data ||
       "hex" in data ||
       "match" in data ||
       "message" in data ||
       "origin" in data ||
+      "password" in data ||
+      "permission" in data ||
       "plural" in data ||
       "replace" in data ||
       "source" in data ||
       "sway" in data ||
       "title" in data ||
-      "tree" in data
+      "tree" in data ||
+      "username" in data
     )
   );
 }
@@ -435,6 +552,43 @@ const hexRegex: RegExp = /^#?[0-9A-Fa-f]{6}$/;
 // ---
 // Section: Schemas
 // ---
+
+export const UserSchema = z
+  .object({
+    id: z.number().optional(),
+    username: z.string(),
+    password: z.string().transform(async (value) => {
+      const hashedPassword = await bcrypt.hash(value, 10);
+      return hashedPassword;
+    }),
+    permission: z.nativeEnum(PermissionType),
+  })
+  .refine(async (data) => {
+    if (data.permission == PermissionType.ADMINISTRATOR) {
+      if (process.env.ADMINISTRATOR_PASSWORD != undefined) {
+        const isAdministrator = await bcrypt.compare(
+          process.env.ADMINISTRATOR_PASSWORD,
+          data.password
+        );
+        if (isAdministrator) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  });
+
+export const SessionSchema = z.object({
+  id: z.string(),
+  user: UserSchema.optional(),
+  userID: z.number(),
+  expiresAt: z.date(),
+});
 
 export const TraitSchema = z.object({
   id: z.number().optional(),
@@ -485,7 +639,6 @@ export const TemplateSchema = z.object({
 
 export const TemplatesOnTraitsSchema = z.object({
   id: z.number().optional(),
-  type: z.nativeEnum(TraitType),
   template: TemplateSchema.optional(),
   templateID: z.number(),
   trait: TraitSchema.optional(),
@@ -514,7 +667,6 @@ export const MoveSchema = z
 
 export const MovesOnTraitsSchema = z.object({
   id: z.number().optional(),
-  type: z.nativeEnum(TraitType),
   move: MoveSchema.optional(),
   moveID: z.number(),
   trait: TraitSchema.optional(),

@@ -38,32 +38,20 @@ export async function POST(
     const requestData: MovesOnTraits = MovesOnTraitsSchema.parse(response);
     const responseData: MovesOnTraits | null = sanitize(requestData);
     if (responseData != null) {
-      try {
-        const name = (await params).slug[0].toUpperCase();
-        const trait = await prisma.trait.findFirstOrThrow({
-          where: {
-            name,
-          },
-        });
-        const traitID = trait.id;
-        const movesOnTraits = await prisma.movesOnTraits.create({
-          data: {
-            type: responseData.type,
-            moveID: responseData.moveID,
-            traitID: traitID,
-          },
-        });
-        return NextResponse.json({ movesOnTraits }, { status: 200 });
-      } catch (error) {
-        const movesOnTraits = await prisma.movesOnTraits.create({
-          data: {
-            type: responseData.type,
-            moveID: responseData.moveID,
-            traitID: responseData.traitID,
-          },
-        });
-        return NextResponse.json({ movesOnTraits }, { status: 200 });
-      }
+      const name = (await params).slug[0].toUpperCase();
+      const trait = await prisma.trait.findFirstOrThrow({
+        where: {
+          name,
+        },
+      });
+      const traitID = trait.id;
+      const movesOnTraits = await prisma.movesOnTraits.create({
+        data: {
+          moveID: responseData.moveID,
+          traitID: traitID,
+        },
+      });
+      return NextResponse.json({ movesOnTraits }, { status: 200 });
     } else {
       return NextResponse.json(
         { message: "Invalid Input: MovesOnTraits Data" },

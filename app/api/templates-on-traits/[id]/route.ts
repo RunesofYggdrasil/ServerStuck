@@ -36,7 +36,6 @@ export async function PUT(
     if (responseData != null) {
       const templatesOnTraits = await prisma.templatesOnTraits.update({
         data: {
-          type: responseData.type,
           templateID: responseData.templateID,
           traitID: responseData.traitID,
         },

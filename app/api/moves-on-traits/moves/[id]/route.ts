@@ -35,7 +35,6 @@ export async function POST(
     if (responseData != null) {
       const movesOnTraits = await prisma.movesOnTraits.create({
         data: {
-          type: responseData.type,
           moveID: moveID,
           traitID: responseData.traitID,
         },

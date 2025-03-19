@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
     if (responseData != null) {
       const templatesOnTraits = await prisma.templatesOnTraits.create({
         data: {
-          type: responseData.type,
           templateID: responseData.templateID,
           traitID: responseData.traitID,
         },

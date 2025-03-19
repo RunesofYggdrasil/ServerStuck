@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     if (responseData != null) {
       const movesOnTraits = await prisma.movesOnTraits.create({
         data: {
-          type: responseData.type,
           moveID: responseData.moveID,
           traitID: responseData.traitID,
         },

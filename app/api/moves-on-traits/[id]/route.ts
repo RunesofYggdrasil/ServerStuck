@@ -35,7 +35,6 @@ export async function PUT(
     if (responseData != null) {
       const movesOnTraits = await prisma.movesOnTraits.update({
         data: {
-          type: responseData.type,
           moveID: responseData.moveID,
           traitID: responseData.traitID,
         },
