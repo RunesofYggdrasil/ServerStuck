@@ -8,7 +8,7 @@ import {
 import { sha256 } from "@oslojs/crypto/sha2";
 import fetchAPI from "../api/fetch";
 
-export function sessionGenerateToken(): string {
+export async function sessionGenerateToken(): Promise<string> {
   const sessionBytes = new Uint8Array(20);
   crypto.getRandomValues(sessionBytes);
   const sessionToken = encodeBase32LowerCaseNoPadding(sessionBytes);

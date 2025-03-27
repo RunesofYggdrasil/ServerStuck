@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         user.password
       );
       if (password) {
-        const token = sessionGenerateToken();
+        const token = await sessionGenerateToken();
         const session = sessionCreate(token, user.id);
         return NextResponse.json(
           { message: "Login Successful: Valid Password" },
