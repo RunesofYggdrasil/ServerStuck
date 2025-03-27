@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
           data: {
             name: responseData.name,
             desc: responseData.desc,
+            expression: responseData.expression,
           },
         });
         return NextResponse.json({ template }, { status: 200 });

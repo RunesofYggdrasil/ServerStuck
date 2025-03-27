@@ -48,6 +48,7 @@ export async function PUT(
           data: {
             name: responseData.name,
             desc: responseData.desc,
+            expression: responseData.expression,
           },
           where: {
             id,

@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
             name: responseData.name,
             desc: responseData.desc,
             type: responseData.type,
+            expression: responseData.expression,
           },
         });
         return NextResponse.json({ trait }, { status: 200 });

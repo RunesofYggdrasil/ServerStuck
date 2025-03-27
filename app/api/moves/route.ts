@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
             desc: responseData.desc,
             origin: responseData.origin,
             originID: responseData.originID,
+            expression: responseData.expression,
           },
         });
         return NextResponse.json({ move }, { status: 200 });

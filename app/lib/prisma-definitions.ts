@@ -7,6 +7,7 @@ import {
 } from "@prisma/client";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { formatExpressionString } from "./expressions/strings";
 
 // ---
 // Section: Interfaces
@@ -36,6 +37,7 @@ export interface Trait {
   name: string;
   desc?: string | undefined;
   type: TraitName;
+  expression?: string | undefined;
 }
 
 export interface Zodiac {
@@ -57,6 +59,7 @@ export interface Tree {
   type: TraitName;
   source?: Trait | undefined;
   sourceID: number;
+  expression?: string | undefined;
 }
 
 export interface Template {
@@ -65,6 +68,7 @@ export interface Template {
   desc?: string | undefined;
   traits?: TemplatesOnTraits[] | undefined;
   traitIDs?: number[] | undefined;
+  expression?: string | undefined;
 }
 
 export interface TemplatesOnTraits {
@@ -83,6 +87,7 @@ export interface Move {
   originID?: number | undefined;
   traits?: MovesOnTraits[] | undefined;
   traitIDs?: number[] | undefined;
+  expression?: string | undefined;
 }
 
 export interface MovesOnTraits {
@@ -565,6 +570,12 @@ export const TraitSchema = z.object({
   }),
   desc: z.string().optional(),
   type: z.nativeEnum(TraitName),
+  expression: z
+    .string()
+    .transform((value) => {
+      return formatExpressionString(value);
+    })
+    .optional(),
 });
 
 export const ZodiacSchema = z.object({
@@ -595,6 +606,12 @@ export const TreeSchema = z.object({
   type: z.nativeEnum(TraitName),
   source: TraitSchema.optional(),
   sourceID: z.number(),
+  expression: z
+    .string()
+    .transform((value) => {
+      return formatExpressionString(value);
+    })
+    .optional(),
 });
 
 export const TemplateSchema = z.object({
@@ -603,6 +620,12 @@ export const TemplateSchema = z.object({
     return value.toUpperCase();
   }),
   desc: z.string().optional(),
+  expression: z
+    .string()
+    .transform((value) => {
+      return formatExpressionString(value);
+    })
+    .optional(),
 });
 
 export const TemplatesOnTraitsSchema = z.object({
@@ -622,6 +645,12 @@ export const MoveSchema = z
     desc: z.string().optional(),
     origin: z.nativeEnum(TreeName),
     originID: z.number().optional(),
+    expression: z
+      .string()
+      .transform((value) => {
+        return formatExpressionString(value);
+      })
+      .optional(),
   })
   .refine((data) => {
     if (data.originID == undefined && data.origin != TreeName.GENERICS) {

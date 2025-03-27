@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
             desc: responseData.desc,
             type: responseData.type,
             sourceID: responseData.sourceID,
+            expression: responseData.expression,
           },
         });
         return NextResponse.json({ tree }, { status: 200 });

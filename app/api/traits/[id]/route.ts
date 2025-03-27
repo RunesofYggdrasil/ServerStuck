@@ -49,6 +49,7 @@ export async function PUT(
             name: responseData.name,
             desc: responseData.desc,
             type: responseData.type,
+            expression: responseData.expression,
           },
           where: {
             id,

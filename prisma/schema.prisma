@@ -4,8 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
 }
 
@@ -33,6 +33,7 @@ model Trait {
   name           String              @unique
   desc           String?
   type           TraitName
+  expression     String?
   zodiacCaste    Zodiac[]            @relation(name: "Caste")
   zodiacSway     Zodiac[]            @relation(name: "Sway")
   zodiacAspect   Zodiac[]            @relation(name: "Aspect")
@@ -58,21 +59,23 @@ model Zodiac {
 }
 
 model Tree {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  desc     String?
-  type     TraitName
-  source   Trait     @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  sourceID Int
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  desc       String?
+  type       TraitName
+  source     Trait     @relation(fields: [sourceID], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  sourceID   Int
+  expression String?
 
   @@map("trees")
 }
 
 model Template {
-  id     Int                 @id @default(autoincrement())
-  name   String              @unique
-  desc   String?
-  traits TemplatesOnTraits[]
+  id         Int                 @id @default(autoincrement())
+  name       String              @unique
+  desc       String?
+  expression String?
+  traits     TemplatesOnTraits[]
 
   @@map("templates")
 }
@@ -88,12 +91,13 @@ model TemplatesOnTraits {
 }
 
 model Move {
-  id           Int                @id @default(autoincrement())
-  name         String             @unique
-  desc         String?
-  origin       TreeName
-  originID     Int?
-  traits       MovesOnTraits[]
+  id         Int             @id @default(autoincrement())
+  name       String          @unique
+  desc       String?
+  origin     TreeName
+  originID   Int?
+  expression String?
+  traits     MovesOnTraits[]
 
   @@map("moves")
 }
