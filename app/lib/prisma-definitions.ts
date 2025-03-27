@@ -85,8 +85,6 @@ export interface Move {
   originID?: number | undefined;
   traits?: MovesOnTraits[] | undefined;
   traitIDs?: number[] | undefined;
-  expression?: ExpressionBuilder | undefined;
-  expressionID?: number;
 }
 
 export interface MovesOnTraits {
@@ -131,17 +129,6 @@ export interface Color {
   hex: string;
   origin: ModelName;
   originID: number;
-}
-
-export interface ExpressionBuilder {
-  id?: number | undefined;
-  name?: string | undefined;
-  public: boolean;
-  type: ExpressionType;
-  origin?: ExpressionName | undefined;
-  originID?: number | undefined;
-  expression?: ExpressionBuilder | undefined;
-  expressionID?: number | undefined;
 }
 
 // ---
@@ -518,33 +505,6 @@ export function isColor(data: any): data is Color {
   );
 }
 
-export function isExpressionBuilder(data: any): data is ExpressionBuilder {
-  return (
-    typeof data === "object" &&
-    data !== null &&
-    "public" in data &&
-    "type" in data &&
-    !(
-      "aspect" in data ||
-      "cases" in data ||
-      "caste" in data ||
-      "expiresAt" in data ||
-      "hex" in data ||
-      "match" in data ||
-      "message" in data ||
-      "password" in data ||
-      "permission" in data ||
-      "plural" in data ||
-      "replace" in data ||
-      "source" in data ||
-      "sway" in data ||
-      "title" in data ||
-      "tree" in data ||
-      "username" in data
-    )
-  );
-}
-
 // ---
 // Section: Regex
 // ---
@@ -664,8 +624,6 @@ export const MoveSchema = z
     desc: z.string().optional(),
     origin: z.nativeEnum(TreeName),
     originID: z.number().optional(),
-    expression: z.lazy(() => ExpressionBuilderSchema).optional(),
-    expressionID: z.number().optional(),
   })
   .refine((data) => {
     if (data.originID == undefined && data.origin != TreeName.GENERICS) {
@@ -763,33 +721,6 @@ export const ColorSchema = z.object({
   originID: z.number(),
 });
 
-export const ExpressionBuilderSchema: z.ZodType<ExpressionBuilder> = z.lazy(
-  () =>
-    z
-      .object({
-        id: z.number().optional(),
-        name: z
-          .string()
-          .transform((value) => {
-            return value.toUpperCase();
-          })
-          .optional(),
-        public: z.boolean(),
-        type: z.nativeEnum(ExpressionType),
-        origin: z.nativeEnum(ExpressionName).optional(),
-        originID: z.number().optional(),
-        expression: ExpressionBuilderSchema.optional(),
-        expressionID: z.number().optional(),
-      })
-      .refine((data) => {
-        if (data.origin != undefined || data.expressionID != undefined) {
-          return true;
-        } else {
-          return false;
-        }
-      })
-);
-
 // ---
 // Section: Enums
 // ---
@@ -853,33 +784,5 @@ export function toModelName(value: string): ModelName {
       return ModelName.QUIRK;
     default:
       return ModelName.TRAIT;
-  }
-}
-
-export function toExpressionName(value: string): ExpressionName {
-  switch (value) {
-    case "TRAITS":
-      return ExpressionName.TRAIT;
-    case "TREES":
-      return ExpressionName.TREE;
-    case "TEMPLATES":
-      return ExpressionName.TEMPLATE;
-    case "MOVES":
-      return ExpressionName.MOVE;
-    default:
-      return ExpressionName.MOVE;
-  }
-}
-
-export function toExpressionType(value: string): ExpressionType {
-  switch (value) {
-    case "AND":
-      return ExpressionType.AND;
-    case "OR":
-      return ExpressionType.OR;
-    case "NOT":
-      return ExpressionType.NOT;
-    default:
-      return ExpressionType.AND;
   }
 }

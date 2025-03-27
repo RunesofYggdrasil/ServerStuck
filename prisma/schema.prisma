@@ -93,8 +93,6 @@ model Move {
   desc         String?
   origin       TreeName
   originID     Int?
-  expression   ExpressionBuilder? @relation(name: "Requirements", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  expressionID Int?
   traits       MovesOnTraits[]
 
   @@map("moves")
@@ -148,21 +146,6 @@ model Color {
   @@map("colors")
 }
 
-model ExpressionBuilder {
-  id           Int                 @id @default(autoincrement())
-  name         String?             @unique
-  public       Boolean
-  type         ExpressionType
-  origin       ExpressionName?
-  originID     Int?
-  expression   ExpressionBuilder?  @relation(name: "ExpressionBuilderToExpressionBuilder", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  expressionID Int?
-  expressions  ExpressionBuilder[] @relation(name: "ExpressionBuilderToExpressionBuilder")
-  moves        Move[]              @relation(name: "Requirements")
-
-  @@map("expression_builders")
-}
-
 enum PermissionType {
   USER
   DEVELOPER
@@ -206,21 +189,4 @@ enum ModelName {
   QUIRK
 
   @@map("model_name_enum")
-}
-
-enum ExpressionName {
-  TREE
-  TEMPLATE
-  TRAIT
-  MOVE
-
-  @@map("expression_name_enum")
-}
-
-enum ExpressionType {
-  AND
-  OR
-  NOT
-
-  @@map("expression_type_enum")
 }

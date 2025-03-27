@@ -50,7 +50,6 @@ export async function PUT(
             desc: responseData.desc,
             origin: responseData.origin,
             originID: responseData.originID,
-            expressionID: responseData.expressionID,
           },
           where: {
             id,
