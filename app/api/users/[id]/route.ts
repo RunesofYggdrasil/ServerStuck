@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/prisma";
-import { sanitize } from "@/app/api/sanitize";
-import { Trait, TraitSchema } from "@/app/lib/prisma-definitions";
+import { User, UserSchema } from "@/app/lib/prisma-definitions";
 
 export async function GET(
   request: NextRequest,
@@ -9,12 +8,12 @@ export async function GET(
 ) {
   try {
     const id = Number.parseInt((await params).id);
-    const trait = await prisma.trait.findFirstOrThrow({
+    const user = await prisma.user.findFirstOrThrow({
       where: {
         id,
       },
     });
-    return NextResponse.json({ trait }, { status: 200 });
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }
@@ -27,38 +26,38 @@ export async function PUT(
   try {
     const id = Number.parseInt((await params).id);
     const response = await request.json();
-    const requestData: Trait = TraitSchema.parse(response);
-    const responseData: Trait | null = sanitize(requestData);
-    if (responseData != null) {
+    const requestData: User = UserSchema.parse(response);
+    if (requestData != null) {
       try {
-        const duplicateData = await prisma.trait.findFirstOrThrow({
+        const duplicateData = await prisma.user.findFirstOrThrow({
           where: {
             NOT: {
               id,
             },
-            name: responseData.name,
+            username: requestData.username,
           },
         });
         return NextResponse.json(
-          { message: "Trait with this name already exists." },
+          { message: "User with this username already exists." },
           { status: 400 }
         );
       } catch (error) {
-        const trait = await prisma.trait.update({
+        // Password is Hashed in UserSchema Already
+        const user = await prisma.user.update({
           data: {
-            name: responseData.name,
-            desc: responseData.desc,
-            type: responseData.type,
+            username: requestData.username,
+            password: requestData.password,
+            permission: requestData.permission,
           },
           where: {
             id,
           },
         });
-        return NextResponse.json({ trait }, { status: 200 });
+        return NextResponse.json({ user }, { status: 200 });
       }
     } else {
       return NextResponse.json(
-        { message: "Invalid Input: Trait Data" },
+        { message: "Invalid Input: User Data" },
         { status: 400 }
       );
     }
@@ -73,12 +72,12 @@ export async function DELETE(
 ) {
   try {
     const id = Number.parseInt((await params).id);
-    const trait = await prisma.trait.delete({
+    const user = await prisma.user.delete({
       where: {
         id,
       },
     });
-    return NextResponse.json({ trait }, { status: 200 });
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });
   }

@@ -1,4 +1,5 @@
 import {
+  ExpressionName,
   ExpressionType,
   MessageType,
   ModelName,
@@ -18,6 +19,11 @@ export interface User {
   username: string;
   password: string;
   permission: PermissionType;
+}
+
+export interface Login {
+  username: string;
+  password: string;
 }
 
 export interface Session {
@@ -132,7 +138,7 @@ export interface ExpressionBuilder {
   name?: string | undefined;
   public: boolean;
   type: ExpressionType;
-  origin?: TreeName | undefined;
+  origin?: ExpressionName | undefined;
   originID?: number | undefined;
   expression?: ExpressionBuilder | undefined;
   expressionID?: number | undefined;
@@ -526,7 +532,6 @@ export function isExpressionBuilder(data: any): data is ExpressionBuilder {
       "hex" in data ||
       "match" in data ||
       "message" in data ||
-      "origin" in data ||
       "password" in data ||
       "permission" in data ||
       "plural" in data ||
@@ -582,6 +587,11 @@ export const UserSchema = z
       return true;
     }
   });
+
+export const LoginSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
 
 export const SessionSchema = z.object({
   id: z.string(),
@@ -766,13 +776,13 @@ export const ExpressionBuilderSchema: z.ZodType<ExpressionBuilder> = z.lazy(
           .optional(),
         public: z.boolean(),
         type: z.nativeEnum(ExpressionType),
-        move: MoveSchema.optional(),
-        moveID: z.number().optional(),
+        origin: z.nativeEnum(ExpressionName).optional(),
+        originID: z.number().optional(),
         expression: ExpressionBuilderSchema.optional(),
         expressionID: z.number().optional(),
       })
       .refine((data) => {
-        if (data.moveID != undefined || data.expressionID != undefined) {
+        if (data.origin != undefined || data.expressionID != undefined) {
           return true;
         } else {
           return false;
@@ -843,6 +853,21 @@ export function toModelName(value: string): ModelName {
       return ModelName.QUIRK;
     default:
       return ModelName.TRAIT;
+  }
+}
+
+export function toExpressionName(value: string): ExpressionName {
+  switch (value) {
+    case "TRAITS":
+      return ExpressionName.TRAIT;
+    case "TREES":
+      return ExpressionName.TREE;
+    case "TEMPLATES":
+      return ExpressionName.TEMPLATE;
+    case "MOVES":
+      return ExpressionName.MOVE;
+    default:
+      return ExpressionName.MOVE;
   }
 }
 

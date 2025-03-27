@@ -33,6 +33,9 @@ export async function PUT(
       try {
         const duplicateData = await prisma.quirk.findFirstOrThrow({
           where: {
+            NOT: {
+              id,
+            },
             name: responseData.name,
           },
         });

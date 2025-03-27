@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
             name: responseData.name,
             public: responseData.public,
             type: responseData.type,
-            moveID: responseData.moveID,
+            origin: responseData.origin,
+            originID: responseData.originID,
             expressionID: responseData.expressionID,
           },
         });

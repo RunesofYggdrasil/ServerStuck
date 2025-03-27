@@ -33,6 +33,9 @@ export async function PUT(
       try {
         const duplicateData = await prisma.tree.findFirstOrThrow({
           where: {
+            NOT: {
+              id,
+            },
             name: responseData.name,
           },
         });

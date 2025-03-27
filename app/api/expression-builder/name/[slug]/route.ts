@@ -53,7 +53,8 @@ export async function PUT(
             name: responseData.name,
             public: responseData.public,
             type: responseData.type,
-            moveID: responseData.moveID,
+            origin: responseData.origin,
+            originID: responseData.originID,
             expressionID: responseData.expressionID,
           },
           where: {

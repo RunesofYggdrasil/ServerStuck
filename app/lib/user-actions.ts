@@ -1,6 +1,5 @@
 "use server";
 
-import prisma from "@/prisma/prisma";
 import { Session, User } from "./prisma-definitions";
 import {
   encodeBase32LowerCaseNoPadding,
@@ -36,51 +35,44 @@ export async function sessionCreate(
   return postSessionRequest.session;
 }
 
-// NOTE: FIX LATER
 export async function sessionValidateToken(
   token: string
 ): Promise<SessionValidationResult> {
-  const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-  const result = await prisma.session.findUnique({
-    where: {
-      id: sessionId,
-    },
-    include: {
-      user: true,
-    },
-  });
-  if (result === null) {
+  const sessionID = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+  try {
+    const session = await fetchAPI("GET", "/sessions/sessions/" + sessionID);
+    const user = await fetchAPI("GET", "/users/sessions/" + sessionID);
+    if (Date.now() >= session.expiresAt.getTime()) {
+      await fetchAPI("DELETE", "/sessions/session/" + sessionID);
+      return { session: null, user: null };
+    } else if (
+      Date.now() >=
+      session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15
+    ) {
+      const updateSessionRequestBody = JSON.stringify({
+        userID: session.userID,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+      });
+      const updateSessionResponse = await fetchAPI(
+        "PUT",
+        "/sessions/session/" + sessionID,
+        updateSessionRequestBody
+      );
+      return { session: updateSessionResponse, user };
+    } else {
+      return { session, user };
+    }
+  } catch (error) {
     return { session: null, user: null };
   }
-  const { user, ...session } = result;
-  if (Date.now() >= session.expiresAt.getTime()) {
-    await prisma.session.delete({ where: { id: sessionId } });
-    return { session: null, user: null };
-  }
-  if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
-    session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
-    await prisma.session.update({
-      where: {
-        id: session.id,
-      },
-      data: {
-        expiresAt: session.expiresAt,
-      },
-    });
-  }
-  return { session, user };
 }
 
 export async function sessionInvalidate(sessionID: string): Promise<void> {
-  await prisma.session.delete({ where: { id: sessionID } });
+  await fetchAPI("DELETE", "/sessions/sessions/" + sessionID);
 }
 
 export async function sessionInvalidateAll(userID: number): Promise<void> {
-  await prisma.session.deleteMany({
-    where: {
-      userID,
-    },
-  });
+  await fetchAPI("DELETE", "/sessions/users/" + userID);
 }
 
 export type SessionValidationResult =

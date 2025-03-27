@@ -33,6 +33,9 @@ export async function PUT(
       try {
         const duplicateData = await prisma.zodiac.findFirstOrThrow({
           where: {
+            NOT: {
+              id,
+            },
             name: responseData.name,
           },
         });

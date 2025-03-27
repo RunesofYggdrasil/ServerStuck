@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const id = (await params).slug[0].toUpperCase();
+    const id = (await params).slug[0];
     const session = await prisma.session.findFirstOrThrow({
       where: {
         id,
@@ -24,7 +24,7 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const id = (await params).slug[0].toUpperCase();
+    const id = (await params).slug[0];
     const response = await request.json();
     const requestData: Session = SessionSchema.parse(response);
     if (requestData != null) {
@@ -53,7 +53,7 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string[] }> }
 ) {
   try {
-    const id = (await params).slug[0].toUpperCase();
+    const id = (await params).slug[0];
     const session = await prisma.session.delete({
       where: {
         id,

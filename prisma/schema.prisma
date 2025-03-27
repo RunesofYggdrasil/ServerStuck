@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -153,7 +153,7 @@ model ExpressionBuilder {
   name         String?             @unique
   public       Boolean
   type         ExpressionType
-  origin       TreeName?
+  origin       ExpressionName?
   originID     Int?
   expression   ExpressionBuilder?  @relation(name: "ExpressionBuilderToExpressionBuilder", fields: [expressionID], references: [id], onUpdate: Cascade, onDelete: Cascade)
   expressionID Int?
@@ -206,6 +206,15 @@ enum ModelName {
   QUIRK
 
   @@map("model_name_enum")
+}
+
+enum ExpressionName {
+  TREE
+  TEMPLATE
+  TRAIT
+  MOVE
+
+  @@map("expression_name_enum")
 }
 
 enum ExpressionType {
