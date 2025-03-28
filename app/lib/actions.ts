@@ -9,8 +9,8 @@ export async function handleSearchPronouns(
   const pronounRequests: Pronoun[] = [];
   let getPronounRequest: Pronoun;
   if (Array.isArray(pronounKey)) {
-    for (var i = 0; i < pronounKey.length; i++) {
-      let currentKey = pronounKey[i];
+    for (let i = 0; i < pronounKey.length; i++) {
+      const currentKey = pronounKey[i];
       if (typeof currentKey == "string") {
         getPronounRequest = await fetchAPI(
           "GET",
@@ -56,8 +56,8 @@ export async function handlePronouns(
     }
   } else {
     const pronounCases: string[] = [];
-    for (var i = 0; i < searchPronounsRequest.length; i++) {
-      let searchPronounCases = searchPronounsRequest[i].cases;
+    for (let i = 0; i < searchPronounsRequest.length; i++) {
+      const searchPronounCases = searchPronounsRequest[i].cases;
       if (Array.isArray(searchPronounCases)) {
         pronounCases.push(searchPronounCases[0]);
       } else {

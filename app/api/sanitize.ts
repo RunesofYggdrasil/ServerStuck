@@ -10,7 +10,6 @@ import {
   Quirk,
   Message,
   Color,
-  ExpressionBuilder,
 } from "@/app/lib/prisma-definitions";
 import {
   isTrait,
@@ -24,7 +23,6 @@ import {
   isQuirk,
   isMessage,
   isColor,
-  isExpressionBuilder,
 } from "@/app/lib/prisma-definitions";
 
 // https://github.com/colinhacks/zod
@@ -46,7 +44,6 @@ export function sanitize(data: Quirk): Quirk | null;
 export function sanitize(data: Message): Message | null;
 export function sanitize(data: Trait): Trait | null;
 export function sanitize(data: Color): Color | null;
-export function sanitize(data: ExpressionBuilder): ExpressionBuilder | null;
 export function sanitize(
   data:
     | Zodiac
@@ -60,7 +57,6 @@ export function sanitize(
     | Message
     | Trait
     | Color
-    | ExpressionBuilder
 ):
   | Zodiac
   | Tree
@@ -73,7 +69,6 @@ export function sanitize(
   | Message
   | Trait
   | Color
-  | ExpressionBuilder
   | null {
   try {
     if (isZodiac(data)) {
@@ -108,9 +103,6 @@ export function sanitize(
       return data;
     } else if (isColor(data)) {
       console.log(11);
-      return data;
-    } else if (isExpressionBuilder(data)) {
-      console.log(12);
       return data;
     } else {
       return null;

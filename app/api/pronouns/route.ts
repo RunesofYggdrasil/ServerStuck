@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
               det: responseData.cases[2],
               pos: responseData.cases[3],
               ref: responseData.cases[4],
+              plural: responseData.plural,
             },
           });
           return NextResponse.json({ pronoun }, { status: 200 });
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
               det: responseData.cases.det,
               pos: responseData.cases.pos,
               ref: responseData.cases.ref,
+              plural: responseData.plural,
             },
           });
           return NextResponse.json({ pronoun }, { status: 200 });

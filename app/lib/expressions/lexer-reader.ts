@@ -131,11 +131,11 @@ export class Lexer {
     const codeCharacterReader: CharacterReader = new CharacterReader(code);
     const codeAnnotatedTokens: AnnotatedToken[] = [];
     while (codeCharacterReader.hasNext()) {
-      let codePositonStart = codeCharacterReader.getPosition();
-      let codePositionEnd = codePositonStart + 1;
+      const codePositionStart = codeCharacterReader.getPosition();
+      let codePositionEnd = codePositionStart + 1;
 
       let currentTokenDetected: Token | null = null;
-      for (var i = 0; i < this.tokenDetectors.length; i++) {
+      for (let i = 0; i < this.tokenDetectors.length; i++) {
         currentTokenDetected = this.tokenDetectors[i](codeCharacterReader);
         codePositionEnd = codeCharacterReader.getPosition();
         if (currentTokenDetected != null) {
@@ -148,10 +148,10 @@ export class Lexer {
           "Invalid Input: Expression Does Not Match Valid Patterns"
         );
       } else {
-        let currentAnnotatedToken: AnnotatedToken = {
+        const currentAnnotatedToken: AnnotatedToken = {
           type: currentTokenDetected.type,
           value: currentTokenDetected.value,
-          start: codePositonStart,
+          start: codePositionStart,
           end: codePositionEnd,
         };
         codeAnnotatedTokens.push(currentAnnotatedToken);
